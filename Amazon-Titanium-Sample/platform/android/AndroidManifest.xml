@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:amazon="http://schemas.amazon.com/apk/res/android"
+	package="com.arello.pushwoosh.amazon.titanium.test" android:versionCode="1"
+	android:versionName="1">
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="15" />
+
+    <!-- This permission ensures that no other application can intercept your ADM messages. It
+    should have the form packagename.permission.RECIEVE_ADM_MESSAGE where packagename is the
+    name defined in the "package" property of the manifest tag. -->
+    <permission
+        android:name="com.arello.pushwoosh.amazon.titanium.test.permission.RECEIVE_ADM_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <!-- Required permissions -->
+    <uses-permission android:name="com.arello.pushwoosh.amazon.titanium.test.permission.RECEIVE_ADM_MESSAGE" />
+    <uses-permission android:name="com.amazon.device.messaging.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+
+	<application android:icon="@drawable/appicon"
+		android:label="pushwooshmobiletes" android:name="AmazontitaniumpushwooshtestApplication"
+		android:debuggable="true">
+
+		<!-- TI_APPLICATION -->
+
+		<activity android:name=".AmazontitaniumpushwooshtestActivity"
+			android:label="pushwooshmobiletes" android:theme="@style/Theme.Titanium"
+			android:launchMode="singleTop"
+			android:configChanges="keyboardHidden|orientation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+			<intent-filter>
+                <action android:name="com.arello.pushwoosh.amazon.titanium.test.MESSAGE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+		</activity>
+
+		
+
+		<activity android:name="org.appcelerator.titanium.TiActivity"
+			android:configChanges="keyboardHidden|orientation" />
+		<activity android:name="org.appcelerator.titanium.TiTranslucentActivity"
+			android:configChanges="keyboardHidden|orientation"
+			android:theme="@android:style/Theme.Translucent" />
+		<activity android:name="org.appcelerator.titanium.TiModalActivity"
+			android:configChanges="keyboardHidden|orientation"
+			android:theme="@android:style/Theme.Translucent" />
+		<activity android:name="ti.modules.titanium.ui.TiTabActivity"
+			android:configChanges="keyboardHidden|orientation" />
+		<activity android:name="ti.modules.titanium.ui.android.TiPreferencesActivity" />
+
+		<service android:name="org.appcelerator.titanium.analytics.TiAnalyticsService"
+			android:exported="false" />
+		
+	    <activity android:name="com.arellomobile.android.push.PushWebview"/>
+
+        <activity android:name="com.arellomobile.android.push.MessageActivity"/>
+
+        <activity android:name="com.arellomobile.android.push.PushHandlerActivity"/>
+
+        <!--  Application-specific subclass of ADMMessageHandlerBase that will
+          handle received messages -->
+        <service android:name="com.arellomobile.android.push.PushAmazonIntentService" />
+
+        <!-- You must explicitly enable ADM. You must also declare whether your application will run with or without ADM.
+        If you specify android:required="false", your app must degrade gracefully when ADM is unavailable. -->
+        <amazon:enable-feature
+            android:name="com.amazon.device.messaging"
+            android:required="false" />
+
+        <receiver
+            android:name="com.arellomobile.android.push.MessageAlertReceiver"
+            android:permission="com.amazon.device.messaging.permission.SEND">
+            <intent-filter>
+                <action android:name="com.amazon.device.messaging.intent.REGISTRATION" />
+                <action android:name="com.amazon.device.messaging.intent.RECEIVE" />
+
+                <category android:name="com.arello.pushwoosh.amazon.titanium.test" />
+            </intent-filter>
+        </receiver>
+
+	</application>
+
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+	
+
+</manifest>
