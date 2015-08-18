@@ -21,25 +21,38 @@
             
             <application>
             	<meta-data android:name="PW_NOTIFICATION_RECEIVER" android:value="com.pushwoosh.module.IntentReceiver" />
-
-                <activity android:name="com.arellomobile.android.push.PushWebview"/>                
+             
                 <receiver android:name="com.pushwoosh.module.IntentReceiver">
                 <intent-filter>
-                        <action android:name="${tiapp.properties['id']}.com.arellomobile.android.push.REGISTER_BROAD_CAST_ACTION"/>
+                        <action android:name="${tiapp.properties['id']}.com.pushwoosh.REGISTER_BROAD_CAST_ACTION"/>
                     </intent-filter>
                 </receiver>
-                
-                <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
-                    <intent-filter>
-                        <!-- Receives the actual messages. -->
-                        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-                        <!-- Receives the registration id. -->
-                        <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
-                        <category android:name="${tiapp.properties['id']}"/>
-                    </intent-filter>
-                </receiver>
-                
-                <service android:name="com.arellomobile.android.push.PushGCMIntentService"/>
+
+				<receiver android:name="com.pushwoosh.thirdparty.gms.gcm.GcmReceiver" android:exported="true" android:permission="com.google.android.c2dm.permission.SEND">
+				    <intent-filter>
+				        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+				        <category android:name="${tiapp.properties['id']}" />
+				    </intent-filter>
+				</receiver>
+				
+				<service android:name="com.pushwoosh.GCMListenerService" android:exported="false">
+				    <intent-filter>
+				        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+				    </intent-filter>
+				</service>
+				
+				<service android:name="com.pushwoosh.GCMInstanceIDListenerService" android:exported="false">
+				    <intent-filter>
+				        <action android:name="com.google.android.gms.iid.InstanceID" />
+				    </intent-filter>
+				</service>
+				
+				<service
+				    android:name="com.pushwoosh.GCMRegistrationService"
+				    android:exported="false">
+				</service>
+				
+				<activity android:name="com.pushwoosh.richpages.RichPageActivity"/>
             </application>
         </manifest>
 	</android>
