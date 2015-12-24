@@ -8,8 +8,8 @@ var pushnotifications = require('com.pushwoosh.module');
 Ti.API.info("module is => " + pushnotifications);
 
 pushnotifications.pushNotificationsRegister({
-  "pw_appid": "EA75E-CE4BD",
-  "gcm_projectid": "ENTER_GOOGLE_PROJECTID_HERE",
+  "pw_appid": "4FC89B6D14A655.46488481",
+  "gcm_projectid": "60756016005",
   success:function(e)
   {
       Ti.API.info('JS registration success event: ' + e.registrationId);
