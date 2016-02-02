@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 1.1.0
+apiversion: 2
+architectures: armv7 arm64 i386 x86_64
+description: PushwooshModule
+author: Pushwoosh
+license: MIT
+copyright: Copyright (c) 2015 Pushwoosh
+
+# these should not be edited
+name: PushwooshModule
+moduleid: com.pushwoosh.module
+guid: 52006c31-539c-4559-829c-b705e760e977
+platform: iphone
+minsdk: 3.0.0.GA

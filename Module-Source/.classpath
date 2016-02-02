@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/Max/android-sdk-mac_x86/add-ons/addon_google_apis_google_inc_8/libs/maps.jar"/>
+	<classpathentry kind="lib" path="/Users/Max/android-sdk-mac_x86/platforms/android-16/android.jar"/>
+	<classpathentry kind="lib" path="/Users/Max/Library/Application Support/Titanium/mobilesdk/osx/3.1.0.GA/android/titanium.jar"/>
+	<classpathentry kind="lib" path="/Users/Max/Library/Application Support/Titanium/mobilesdk/osx/3.1.0.GA/android/kroll-apt.jar"/>
+	<classpathentry kind="lib" path="/Users/Max/Library/Application Support/Titanium/mobilesdk/osx/3.1.0.GA/android/kroll-common.jar"/>
+	<classpathentry kind="lib" path="/Users/Max/Library/Application Support/Titanium/mobilesdk/osx/3.1.0.GA/android/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="lib/amazon-device-messaging-1.0.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

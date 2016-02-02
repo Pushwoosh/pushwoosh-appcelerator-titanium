@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ti:module xmlns:ti="http://ti.appcelerator.org" xmlns:android="http://schemas.android.com/apk/res/android">
+	<!--
+		Similar to tiapp.xml, but contains module/platform specific
+		configuration in <iphone>, <android>, and <mobileweb> sections
+	-->
+	<iphone>
+	</iphone>
+	<android xmlns:android="http://schemas.android.com/apk/res/android">
+		<manifest>
+			<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+			<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+			<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+			<uses-permission android:name="android.permission.INTERNET"/>
+			<uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+			<uses-permission android:name="android.permission.WAKE_LOCK"/>
+			<uses-permission android:name="${tiapp.properties['id']}.permission.C2D_MESSAGE"/>
+			<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+
+			<!-- This permission is needed for rescheduling local notifications after system restart -->
+			<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+			<!-- <badges> -->
+				<!--for Samsung-->
+				<uses-permission android:name="com.sec.android.provider.badge.permission.READ"/>
+				<uses-permission android:name="com.sec.android.provider.badge.permission.WRITE"/>
+
+				<!--for htc-->
+				<uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS"/>
+				<uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT"/>
+
+				<!--for sony-->
+				<uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE"/>
+
+				<!--for apex-->
+				<uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT"/>
+
+				<!--for solid-->
+				<uses-permission android:name="com.majeur.launcher.permission.UPDATE_BADGE"/>
+			<!-- </badges> -->
+			
+			<permission android:name="${tiapp.properties['id']}.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+			
+			<application>
+				<meta-data android:name="PW_NOTIFICATION_RECEIVER" android:value="com.pushwoosh.module.IntentReceiver" />
+			 
+				<receiver android:name="com.pushwoosh.module.IntentReceiver">
+				<intent-filter>
+						<action android:name="${tiapp.properties['id']}.com.pushwoosh.REGISTER_BROAD_CAST_ACTION"/>
+					</intent-filter>
+				</receiver>
+
+				<receiver android:name="com.google.android.gms.gcm.GcmReceiver" android:exported="true" android:permission="com.google.android.c2dm.permission.SEND">
+					<intent-filter>
+						<action android:name="com.google.android.c2dm.intent.RECEIVE" />
+						<category android:name="${tiapp.properties['id']}" />
+					</intent-filter>
+				</receiver>
+				
+				<service android:name="com.pushwoosh.GCMListenerService" android:exported="false">
+					<intent-filter>
+						<action android:name="com.google.android.c2dm.intent.RECEIVE" />
+					</intent-filter>
+				</service>
+				
+				<service android:name="com.pushwoosh.GCMInstanceIDListenerService" android:exported="false">
+					<intent-filter>
+						<action android:name="com.google.android.gms.iid.InstanceID" />
+					</intent-filter>
+				</service>
+				
+				<service
+					android:name="com.pushwoosh.GCMRegistrationService"
+					android:exported="false">
+				</service>
+				
+				<activity android:name="com.pushwoosh.richpages.RichPageActivity"/>
+
+				<!-- Receivers for local notifications-->
+				<receiver android:name="com.pushwoosh.local.AlarmReceiver" />
+				<receiver android:name="com.pushwoosh.local.BootReceiver" android:permission="android.permission.RECEIVE_BOOT_COMPLETED" android:enabled="true">
+					<intent-filter>
+						<action android:name="android.intent.action.BOOT_COMPLETED" />
+						<category android:name="android.intent.category.DEFAULT" />
+					</intent-filter>
+				</receiver>
+			</application>
+		</manifest>
+	</android>
+	<mobileweb>
+	</mobileweb>
+</ti:module>
