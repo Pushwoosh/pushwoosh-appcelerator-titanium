@@ -16,6 +16,8 @@
 			<uses-permission android:name="android.permission.WAKE_LOCK"/>
 			<uses-permission android:name="${tiapp.properties['id']}.permission.C2D_MESSAGE"/>
 			<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+			<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+			<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 			<!-- This permission is needed for rescheduling local notifications after system restart -->
 			<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -42,6 +44,7 @@
 			<permission android:name="${tiapp.properties['id']}.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
 			
 			<application>
+				<meta-data android:name="com.google.android.gms.version" android:value="8487000" />
 				<meta-data android:name="PW_NOTIFICATION_RECEIVER" android:value="com.pushwoosh.module.IntentReceiver" />
 			 
 				<receiver android:name="com.pushwoosh.module.IntentReceiver">
@@ -73,6 +76,11 @@
 					android:name="com.pushwoosh.GCMRegistrationService"
 					android:exported="false">
 				</service>
+
+				<!--
+				  Service for sending location updates
+				-->
+				<service android:name="com.pushwoosh.location.GeoLocationService" />
 				
 				<activity android:name="com.pushwoosh.richpages.RichPageActivity"/>
 
