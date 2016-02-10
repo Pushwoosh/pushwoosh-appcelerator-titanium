@@ -22,7 +22,7 @@ static id objectOrNull(id object)
 static BOOL checkArgument(id argument, Class expectedClass)
 {
 	if (!argument || ! [argument isKindOfClass:expectedClass]) {
-		NSLog(@"[ERROR] Pushwoosh: Invalid argument. Expected argument of type %@", expectedClass);
+		NSLog(@"[ERROR][PW-APPC]: Invalid argument. Expected argument of type %@", expectedClass);
 		return NO;
 	}
 	return YES;
@@ -58,7 +58,7 @@ static BOOL checkArgument(id argument, Class expectedClass)
 	pushManager.showPushnotificationAlert = NO;
 	pushManager.delegate = self;
 
-	NSLog(@"[INFO] %@ loaded", self);
+	NSLog(@"[INFO][PW-APPC] %@ loaded", self);
 }
 
 - (void)shutdown:(id)sender
@@ -111,7 +111,7 @@ static BOOL checkArgument(id argument, Class expectedClass)
 	
 	if([argumentsArray count] != 1)
 	{
-		NSLog(@"[ERROR] Pushwoosh: pushNotificationsRegister, expected 1 argument");
+		NSLog(@"[ERROR][PW-APPC] pushNotificationsRegister, expected 1 argument");
 		return;
 	}
 	
@@ -190,19 +190,24 @@ static BOOL checkArgument(id argument, Class expectedClass)
 
 - (void)onDidRegisterForRemoteNotificationsWithDeviceToken:(NSString *)token
 {
-	NSDictionary *result = [NSDictionary dictionaryWithObject:token forKey:@"registrationId"];
+	NSLog(@"[INFO][PW-APPC] registered for pushes: %@", token);
 
+	NSDictionary *result = [NSDictionary dictionaryWithObject:token forKey:@"registrationId"];
 	[self.successCallback call:[NSArray arrayWithObject:result] thisObject:nil];
 }
 
 - (void)onDidFailToRegisterForRemoteNotificationsWithError:(NSError*)error
 {
+	NSLog(@"[DEBUG][PW-APPC] failed to register for pushes: %@", error.localizedDescription);
+
 	NSDictionary *result = [NSDictionary dictionaryWithObject:error.localizedDescription forKey:@"error"];
 	[self.errorCallback call:[NSArray arrayWithObject:result] thisObject:nil];
 }
 
 - (void)onPushAccepted:(PushNotificationManager *)manager withNotification:(NSDictionary *)pushNotification onStart:(BOOL)onStart
 {
+	NSLog(@"[DEBUG][PW-APPC] push accepted: onStart: %d, payload: %@", onStart, pushNotification);
+
 	//reset badge counter
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
@@ -214,6 +219,8 @@ static BOOL checkArgument(id argument, Class expectedClass)
 
 - (void) dispatchPush:(NSDictionary*)pushData
 {
+	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
+
 	NSDictionary *result = [NSDictionary dictionaryWithObject:pushData forKey:@"data"];
 	[self.messageCallback call:[NSArray arrayWithObject:result] thisObject:nil];
 }
@@ -229,6 +236,8 @@ static BOOL checkArgument(id argument, Class expectedClass)
 // Just keep the launch notification until the module starts and callback functions initalizes
 - (void)onPushAccepted:(PushNotificationManager *)manager withNotification:(NSDictionary *)pushNotification onStart:(BOOL)onStart
 {
+	NSLog(@"[DEBUG][PW-APPC] UIApplication(InternalPushRuntime) push accepted: onStart: %d, payload: %@", onStart, pushNotification);
+
 	if (onStart)
 		gStartPushData = pushNotification;
 }

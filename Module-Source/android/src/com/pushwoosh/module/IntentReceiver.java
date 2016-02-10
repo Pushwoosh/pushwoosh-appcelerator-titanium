@@ -43,31 +43,31 @@ import java.util.Set;
 public class IntentReceiver extends BroadcastReceiver
 {
 	public void onReceive(Context context, Intent intent)
-    {
-    	if (intent == null) {
-      		return;
-        }
+	{
+		if (intent == null) {
+			return;
+		}
 
-        Log.d("IntentReceiver", "RECEIVE: " + intent.getAction());
-        if(intent.getAction() != null && intent.getAction().equalsIgnoreCase(context.getPackageName() + "." + PushManager.REGISTER_BROAD_CAST_ACTION))
-        {
-        	// on API 14 and higher registation is handled by PushnotificationModule receivers using lifecycle callbacks
-        	if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-        		return;
-        		
-            if(PushnotificationsModule.INSTANCE != null)
-            {
-                Log.d("IntentReceiver", "Registering: INSTANCE NOT NULL");
+		Log.d("IntentReceiver", "RECEIVE: " + intent.getAction());
+		if(intent.getAction() != null && intent.getAction().equalsIgnoreCase(context.getPackageName() + "." + PushManager.REGISTER_BROAD_CAST_ACTION))
+		{
+			// on API 14 and higher registation is handled by PushnotificationModule receivers using lifecycle callbacks
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+				return;
+				
+				if(PushnotificationsModule.INSTANCE != null)
+				{
+						Log.d("IntentReceiver", "Registering: INSTANCE NOT NULL");
 
-                PushnotificationsModule.INSTANCE.checkMessage(intent);
-            }
-            else
-            {
-                Log.d("IntentReceiver", "Registering: INSTANCE IS NULL");
-            }
+						PushnotificationsModule.INSTANCE.checkMessage(intent);
+				}
+				else
+				{
+						Log.d("IntentReceiver", "Registering: INSTANCE IS NULL");
+				}
 
-            return;
-        }
+				return;
+		}
 
 		Bundle pushBundle = PushManagerImpl.preHandlePush(context, intent);
 		if(pushBundle == null)
@@ -76,39 +76,39 @@ public class IntentReceiver extends BroadcastReceiver
 		JSONObject dataObject = PushManagerImpl.bundleToJSON(pushBundle);
 		
 		TiApplication appContext = TiApplication.getInstance();
-        Activity activity = appContext.getCurrentActivity();
-        if (activity == null)
-        	activity = appContext.getRootActivity();
-		
-      	Intent launchIntent = null;
-      	if(activity != null)
-      	{
-      		launchIntent = activity.getIntent();
-      	}
-      	else
-      	{
-      		launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-      		launchIntent.addCategory("android.intent.category.LAUNCHER");
-      	}
-      		
+		Activity activity = appContext.getCurrentActivity();
+		if (activity == null)
+			activity = appContext.getRootActivity();
+
+		Intent launchIntent = null;
+		if(activity != null)
+		{
+			launchIntent = activity.getIntent();
+		}
+		else
+		{
+			launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+			launchIntent.addCategory("android.intent.category.LAUNCHER");
+		}
+					
 		launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 		launchIntent.putExtras(pushBundle);
 		launchIntent.putExtra(PushManager.PUSH_RECEIVE_EVENT, dataObject.toString());
 
 		// on API 14 and higher messages are handled by PushnotificationModule receivers using lifecycle callbacks
-    	if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    	{
-    		if(PushnotificationsModule.INSTANCE != null)
-    		{
-    			Log.d("IntentReceiver", "Push action: INSTANCE NOT NULL");
+		if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+		{
+			if(PushnotificationsModule.INSTANCE != null)
+			{
+				Log.d("IntentReceiver", "Push action: INSTANCE NOT NULL");
 
-    			PushnotificationsModule.INSTANCE.checkMessage(launchIntent);
-    		}
-    		else
-    		{
-    			Log.d("IntentReceiver", "Push action: INSTANCE IS NULL");
-    		}
-    	}
+				PushnotificationsModule.INSTANCE.checkMessage(launchIntent);
+			}
+			else
+			{
+				Log.d("IntentReceiver", "Push action: INSTANCE IS NULL");
+			}
+		}
 
 		context.startActivity(launchIntent);
 		

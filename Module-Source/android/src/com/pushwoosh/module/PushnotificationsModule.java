@@ -116,7 +116,7 @@ public class PushnotificationsModule extends KrollModule
 		
 		Log.d(LCAT, "Push: on pause");
 		return;
- 	}
+	}
  
 	@Override
 	public void onResume(Activity activity) {
@@ -287,7 +287,7 @@ public class PushnotificationsModule extends KrollModule
 //Function: stopTrackingGeoPushes
 //Stops geolocation based push notifications
 	@Kroll.method
-    public void stopTrackingGeoPushes() {
+	public void stopTrackingGeoPushes() {
 		Log.d(LCAT, "stop tracking geo pushes called");
 		if (mPushManager == null)
 		{
@@ -437,13 +437,13 @@ public class PushnotificationsModule extends KrollModule
 			return;
 		
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
-		    @Override
-		    public void run() {
+			@Override
+			public void run() {
 				HashMap data = new HashMap();
 				data.put("registrationId", registrationId);
 
 				successCallback.callAsync(getKrollObject(),data);
-		    }
+			}
 		});
 	}
 
@@ -452,13 +452,13 @@ public class PushnotificationsModule extends KrollModule
 			return;
 		
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
-		    @Override
-		    public void run() {
+			@Override
+			public void run() {
 				HashMap data = new HashMap();
 				data.put("error", error);
 
 				errorCallback.callAsync(getKrollObject(),data);
-		    }
+			}
 		});
 	}
 
@@ -467,13 +467,13 @@ public class PushnotificationsModule extends KrollModule
 			return;
 
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
-		    @Override
-		    public void run() {
+			@Override
+			public void run() {
 				HashMap data = new HashMap();
 				data.put("data", messageData);
 
 				messageCallback.call(getKrollObject(),data);
-		    }
+			}
 		});
 	}
 	
