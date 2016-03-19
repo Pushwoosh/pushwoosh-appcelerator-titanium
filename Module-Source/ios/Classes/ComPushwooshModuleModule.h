@@ -6,8 +6,9 @@
  */
 
 #import "TiModule.h"
+#import <Pushwoosh/PushNotificationManager.h>
 
-@interface ComPushwooshModuleModule : TiModule
+@interface ComPushwooshModuleModule : TiModule<PushNotificationDelegate>
 {
 }
 
