@@ -51,27 +51,34 @@ static __strong NSDictionary * gStartPushData = nil;
 {
 	ENSURE_TYPE(args, NSArray);
 	ENSURE_ARG_COUNT(args, 1);
-    
-	ENSURE_TYPE([args objectAtIndex:0], NSDictionary)
-	NSDictionary *options = [args objectAtIndex:0];
 	
-	ENSURE_TYPE([options objectForKey:@"success"], KrollCallback);
-	ENSURE_TYPE([options objectForKey:@"error"], KrollCallback);
-	ENSURE_TYPE([options objectForKey:@"callback"], KrollCallback);
-    
-	self.successCallback = [options objectForKey:@"success"];
-	self.errorCallback = [options objectForKey:@"error"];
-	self.messageCallback = [options objectForKey:@"callback"];
+	ENSURE_TYPE(args[0], NSDictionary)
+	NSDictionary *options = args[0];
+	
+	if (options[@"success"]) {
+		ENSURE_TYPE(options[@"success"], KrollCallback);
+	}
+	
+	if (options[@"error"]) {
+		ENSURE_TYPE(options[@"error"], KrollCallback);
+	}
+	
+	ENSURE_TYPE(options[@"callback"], KrollCallback);
+	
+	self.successCallback = options[@"success"];
+	self.errorCallback = options[@"error"];
+	self.messageCallback = options[@"callback"];
 		
-	NSString* appCode = [options objectForKey:@"pw_appid"];
+	NSString* appCode = options[@"pw_appid"];
 	ENSURE_TYPE(appCode, NSString);
-    
+	
 	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
 	[[NSUserDefaults standardUserDefaults] setObject:appCode forKey:@"Pushwoosh_APPID"];
 	//we need to re-set APPID if it has been changed (on start we have initialized Push Manager with app id from NSUserDefaults)
 	[pushManager setAppCode:appCode];
 
 	// register for push notifications!
+	NSLog(@"[DEBUG][PW-APPC] registering for push notifications");
 	[[PushNotificationManager pushManager] registerForPushNotifications];
  
 	if (gStartPushData && !self.registered) {
@@ -101,7 +108,7 @@ static __strong NSDictionary * gStartPushData = nil;
 	NSDictionary *tags = args;
 	if ([args isKindOfClass: [NSArray class]]) {
 		// some versions of Titanium may pass argument in array
-		tags = [((NSArray*)args) objectAtIndex: 0];
+		tags = args[0];
 	}
 	
 	ENSURE_TYPE(tags, NSDictionary);
@@ -112,28 +119,28 @@ static __strong NSDictionary * gStartPushData = nil;
 - (void)getLaunchNotification:(id)args
 {
 	ENSURE_TYPE(args, NSArray);
-	ENSURE_TYPE([args objectAtIndex:0], NSDictionary);
+	ENSURE_TYPE(args[0], NSDictionary);
 	
-	NSDictionary *options = [args objectAtIndex:0];
-	KrollCallback *callback = [options objectForKey:@"callback"];
-    
+	NSDictionary *options = args[0];
+	KrollCallback *callback = options[@"callback"];
+	
 	ENSURE_TYPE(callback, KrollCallback);
 	
 	TiThreadPerformOnMainThread(^{
-		[callback call:[NSArray arrayWithObject:gStartPushData ?: [NSNull null]] thisObject:nil];
+		[callback call:@[ gStartPushData ?: [NSNull null] ] thisObject:nil];
 	}, NO);
 }
 
 - (void)onDidRegisterForRemoteNotificationsWithDeviceToken:(NSString *)token
 {
 	NSLog(@"[DEBUG][PW-APPC] registered for pushes: %@", token);
-	[self.successCallback call:[NSArray arrayWithObject:@{@"registrationId":token}] thisObject:nil];
+	[self.successCallback call:@[ @{ @"registrationId" : token} ] thisObject:nil];
 }
 
 - (void)onDidFailToRegisterForRemoteNotificationsWithError:(NSError*)error
 {
 	NSLog(@"[DEBUG][PW-APPC] failed to register for pushes: %@", error.localizedDescription);
-	[self.errorCallback call:[NSArray arrayWithObject:@{@"error":error.localizedDescription}] thisObject:nil];
+	[self.errorCallback call:@[ @{ @"error" : error.localizedDescription} ] thisObject:nil];
 }
 
 - (void)onPushAccepted:(PushNotificationManager *)manager withNotification:(NSDictionary *)pushNotification onStart:(BOOL)onStart
@@ -145,7 +152,7 @@ static __strong NSDictionary * gStartPushData = nil;
 
 	if (onStart) {
 		gStartPushData = pushNotification;
-    }
+	}
 	
 	[self dispatchPush:pushNotification];
 }
@@ -153,7 +160,7 @@ static __strong NSDictionary * gStartPushData = nil;
 - (void) dispatchPush:(NSDictionary*)pushData
 {
 	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
-	[self.messageCallback call:[NSArray arrayWithObject:@{@"data":pushData}] thisObject:nil];
+	[self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
 }
 
 @end
@@ -172,6 +179,12 @@ static __strong NSDictionary * gStartPushData = nil;
 	if (onStart) {
 		gStartPushData = pushNotification;
 	}
+}
+
+// Set delegate to self on start as the module has not been created yet.
+// The delegate will be changed to module instance in startup method
+- (NSObject<PushNotificationDelegate> *)getPushwooshDelegate {
+	return self;
 }
 
 @end
