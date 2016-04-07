@@ -1,3 +1,6 @@
+Current version: 1.2.1
+=========================
+Publish: Refactor and use ti-module best practises
 Current version: 1.2.0
 =========================
 Publish: Android location tracking, more debug logs for iOS
