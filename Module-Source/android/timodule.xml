@@ -92,6 +92,10 @@
 						<category android:name="android.intent.category.DEFAULT" />
 					</intent-filter>
 				</receiver>
+
+				<!-- Rich Media and In-App Messages -->
+				<activity android:name="com.pushwoosh.inapp.WebActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+				<service android:name="com.pushwoosh.inapp.InAppRetrieverService" />
 			</application>
 		</manifest>
 	</android>
