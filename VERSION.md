@@ -1,3 +1,6 @@
+Current version: 1.3.1
+=========================
+Publish: [Android] Rich Media support
 Current version: 1.3.0
 =========================
 Publish: 
