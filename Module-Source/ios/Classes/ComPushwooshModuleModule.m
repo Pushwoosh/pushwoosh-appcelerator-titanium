@@ -37,15 +37,24 @@ static __strong NSDictionary * gStartPushData = nil;
 	[super startup];
 	
 	[self setRegistered:NO];
-	
-	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
-	[pushManager setShowPushnotificationAlert:NO];
-	[pushManager setDelegate:self];
 
 	NSLog(@"[INFO][PW-APPC] %@ loaded", self);
 }
 
 #pragma Public APIs
+
++ (NSString *)readAppName {
+	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+	
+	if(!appName)
+		appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+	
+	if(!appName) {
+		appName = @"";
+	}
+	
+	return appName;
+}
 
 - (void)pushNotificationsRegister:(id)args
 {
@@ -71,11 +80,12 @@ static __strong NSDictionary * gStartPushData = nil;
 		
 	NSString* appCode = options[@"pw_appid"];
 	ENSURE_TYPE(appCode, NSString);
-	
+
+	[PushNotificationManager initializeWithAppCode:appCode appName:[ComPushwooshModuleModule readAppName]];
 	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
-	[[NSUserDefaults standardUserDefaults] setObject:appCode forKey:@"Pushwoosh_APPID"];
-	//we need to re-set APPID if it has been changed (on start we have initialized Push Manager with app id from NSUserDefaults)
-	[pushManager setAppCode:appCode];
+	[pushManager setShowPushnotificationAlert:NO];
+	[pushManager setDelegate:self];
+	[pushManager sendAppOpen];
 
 	// register for push notifications!
 	NSLog(@"[DEBUG][PW-APPC] registering for push notifications");

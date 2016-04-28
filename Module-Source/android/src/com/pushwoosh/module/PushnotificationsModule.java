@@ -25,6 +25,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 
 import com.pushwoosh.BasePushMessageReceiver;
 import com.pushwoosh.BaseRegistrationReceiver;
@@ -87,6 +89,17 @@ public class PushnotificationsModule extends KrollModule
 		// lifecycle callbacks are available since android 14 API
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			TiApplication.getInstance().registerActivityLifecycleCallbacks(new ActivityMonitor());
+		}
+
+		try
+		{
+			Context context = TiApplication.getInstance();
+			ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+			broadcastPush = ai.metaData.getBoolean("PW_BROADCAST_PUSH", true);
+		}
+		catch(Exception e)
+		{
+			// ignore
 		}
 	}
 	

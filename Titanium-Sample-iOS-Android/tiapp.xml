@@ -38,7 +38,14 @@
             </dict>
         </plist>
     </ios>
-    <android xmlns:android="http://schemas.android.com/apk/res/android"/>
+    <android xmlns:android="http://schemas.android.com/apk/res/android">
+        <manifest>
+            <application>
+                <!-- Set to false if you want to disable automatic push open in foreground -->
+                <meta-data android:name="PW_BROADCAST_PUSH" android:value="true" />
+            </application>
+        </manifest>
+    </android>
     <mobileweb>
         <precache/>
         <splash>
