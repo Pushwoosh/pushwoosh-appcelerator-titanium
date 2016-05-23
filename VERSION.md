@@ -1,3 +1,6 @@
+Current version: 1.3.3
+=========================
+[Android] unregister method stability fix
 Current version: 1.3.2
 =========================
 Publish: [Android] Trimmed google-play-services.jar to only include select parts
