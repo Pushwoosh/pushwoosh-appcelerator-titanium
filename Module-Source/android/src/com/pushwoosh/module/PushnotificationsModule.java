@@ -282,6 +282,10 @@ public class PushnotificationsModule extends KrollModule
 	@Kroll.method
 	public void unregister() {
 		Log.d(LCAT, "unregister called");
+		if (mPushManager == null)
+		{
+			return;
+		}
 		mPushManager.unregisterForPushNotifications();	
 	}
 	
