@@ -1,3 +1,6 @@
+Current version: 1.3.4
+=========================
+Publish: Pushwoosh SDK update
 Current version: 1.3.3
 =========================
 [Android] unregister method stability fix
