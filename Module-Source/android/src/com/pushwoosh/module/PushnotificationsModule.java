@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import com.pushwoosh.BasePushMessageReceiver;
 import com.pushwoosh.BaseRegistrationReceiver;
 import com.pushwoosh.PushManager;
+import com.pushwoosh.inapp.InAppFacade;
 
 import android.os.Bundle;
 
@@ -412,6 +413,22 @@ public class PushnotificationsModule extends KrollModule
 	public void addBadgeNumber(int deltaBadge)
 	{
 		mPushManager.addBadgeNumber(deltaBadge);
+	}
+
+//Function: setUserId
+// Set User indentifier.  This could be Facebook ID, username or email, or any other user ID.  This allows data and events to be matched across multiple user devices.
+	@Kroll.method
+	public void setUserId(String userId)
+	{
+		mPushManager.setUserId(TiApplication.getInstance(), userId);
+	}
+
+//Function: postEvent
+// Post events for In-App Messages.  This can trigger In-App message display as specified in Pushwoosh Control Panel.
+	@Kroll.method
+	public void postEvent(String event, HashMap attributes)
+	{
+		InAppFacade.postEvent(TiApplication.getInstance().getRootActivity(), event, (Map<String, Object>)attributes);
 	}
 
 	public void checkMessage(Intent intent)

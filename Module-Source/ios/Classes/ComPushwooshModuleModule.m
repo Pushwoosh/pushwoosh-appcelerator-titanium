@@ -61,7 +61,7 @@ static __strong NSDictionary * gStartPushData = nil;
 	ENSURE_TYPE(args, NSArray);
 	ENSURE_ARG_COUNT(args, 1);
 	
-	ENSURE_TYPE(args[0], NSDictionary)
+	ENSURE_TYPE(args[0], NSDictionary);
 	NSDictionary *options = args[0];
 	
 	if (options[@"success"]) {
@@ -139,6 +139,27 @@ static __strong NSDictionary * gStartPushData = nil;
 	TiThreadPerformOnMainThread(^{
 		[callback call:@[ gStartPushData ?: [NSNull null] ] thisObject:nil];
 	}, NO);
+}
+
+- (void)setUserId:(id)args
+{	
+	ENSURE_TYPE(args, NSString);
+
+	[[PushNotificationManager pushManager] setUserId:args];
+}
+
+- (void)postEvent:(id)args
+{
+	ENSURE_TYPE(args, NSArray);
+	ENSURE_ARG_COUNT(args, 2);
+
+	ENSURE_TYPE(args[0], NSString);
+	NSString *event = args[0];
+
+	ENSURE_TYPE(args[1], NSDictionary);
+	NSDictionary *attributes = args[1];
+
+	[[PushNotificationManager pushManager] postEvent:event withAttributes:attributes];
 }
 
 - (void)onDidRegisterForRemoteNotificationsWithDeviceToken:(NSString *)token

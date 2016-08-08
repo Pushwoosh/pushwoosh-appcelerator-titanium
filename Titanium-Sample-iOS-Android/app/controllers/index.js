@@ -12,29 +12,26 @@ pushnotifications.pushNotificationsRegister({
   "gcm_projectid": "60756016005", // please note this is the project "number" not the "id" when viewed in the google API console.  You can find this under the project settings.
   success:function(e)
   {
-    setTimeout(function() {
       Ti.API.info('JS registration success event: ' + e.registrationId);
-    }, 0);
   },
   error:function(e)
   {
-    setTimeout(function() {
       Ti.API.error("Error during registration: "+e.error);
-    }, 0);
   },
   callback:function(e) // called when a push notification is received
   {
-    setTimeout(function() {
-      //push notifications title: e.data.aps.alert
       Ti.API.info('JS message event: ' + JSON.stringify(e.data));
-    }, 0);
   }
 });
 
-pushnotifications.setTags({deviceName:"hello", deviceId:10});
+// Segmentation
+//pushnotifications.setTags({deviceName:"hello", deviceId:10});
+//pushnotifications.setTags({"MyTag":["hello", "world"]});
 
-//setings list tags "MyTag" with values (array) "hello", "world"
-pushnotifications.setTags({"MyTag":["hello", "world"]});
+// Geopushes
+//pushnotifications.startTrackingGeoPushes();
+//pushnotifications.stopTrackingGeoPushes();
 
-pushnotifications.startTrackingGeoPushes();
-pushnotifications.stopTrackingGeoPushes();
+// Inapp & Events
+//pushnotifications.setUserId("pushwooshid%42");
+//pushnotifications.postEvent("buttonPressed", { "buttonNumber" : 4, "buttonLabel" : "banner" });
