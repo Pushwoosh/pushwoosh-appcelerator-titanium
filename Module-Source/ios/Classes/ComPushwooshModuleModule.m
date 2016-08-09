@@ -43,19 +43,6 @@ static __strong NSDictionary * gStartPushData = nil;
 
 #pragma Public APIs
 
-+ (NSString *)readAppName {
-	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-	
-	if(!appName)
-		appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
-	
-	if(!appName) {
-		appName = @"";
-	}
-	
-	return appName;
-}
-
 - (void)initialize:(id)args
 {
 	ENSURE_TYPE(args, NSArray);
@@ -68,7 +55,7 @@ static __strong NSDictionary * gStartPushData = nil;
 
 	ENSURE_TYPE(appCode, NSString);
 
-	[PushNotificationManager initializeWithAppCode:appCode appName:[ComPushwooshModuleModule readAppName]];
+	[PushNotificationManager initializeWithAppCode:appCode appName:nil];
 	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
 	[pushManager setShowPushnotificationAlert:NO];
 	[pushManager setDelegate:self];
@@ -144,7 +131,7 @@ static __strong NSDictionary * gStartPushData = nil;
 	NSString* appCode = options[@"pw_appid"];
 	ENSURE_TYPE(appCode, NSString);
 
-	[PushNotificationManager initializeWithAppCode:appCode appName:[ComPushwooshModuleModule readAppName]];
+	[PushNotificationManager initializeWithAppCode:appCode appName:nil];
 	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
 	[pushManager setShowPushnotificationAlert:NO];
 	[pushManager setDelegate:self];
@@ -254,7 +241,7 @@ static __strong NSDictionary * gStartPushData = nil;
 - (void) dispatchPush:(NSDictionary*)pushData
 {
 	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
-	
+
 	[self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
 
 	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
