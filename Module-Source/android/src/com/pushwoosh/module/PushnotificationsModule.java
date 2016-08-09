@@ -32,6 +32,9 @@ import com.pushwoosh.BasePushMessageReceiver;
 import com.pushwoosh.BaseRegistrationReceiver;
 import com.pushwoosh.PushManager;
 import com.pushwoosh.inapp.InAppFacade;
+import com.pushwoosh.internal.utils.JsonUtils;
+
+import org.json.JSONObject;
 
 import android.os.Bundle;
 
@@ -582,10 +585,10 @@ public class PushnotificationsModule extends KrollModule
 				data.put("data", messageData);
 
 				if (messageCallback != null)
-					messageCallback.call(getKrollObject(),data);
+					messageCallback.call(getKrollObject(), data);
 
 				if (pushOpenCallback != null)
-					pushOpenCallback.call(getKrollObject(),data);
+					pushOpenCallback.call(getKrollObject(), convertMessageData(messageData));
 			}
 		});
 	}
@@ -597,12 +600,30 @@ public class PushnotificationsModule extends KrollModule
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				HashMap data = new HashMap();
-				data.put("data", messageData);
-
-				pushReceiveCallback.call(getKrollObject(),data);
+				pushReceiveCallback.call(getKrollObject(), convertMessageData(messageData));
 			}
 		});
+	}
+
+	private HashMap<String, Object> convertMessageData(String messageData)
+	{
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		try
+		{
+			JSONObject json = new JSONObject(messageData);
+			Boolean foreground = json.optBoolean("foreground");
+			String message = json.optString("title");
+
+			result.put("data", JsonUtils.jsonToMap(json));
+			result.put("foreground", foreground);
+			result.put("message", message);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 	
 	public void resetIntentValues(Activity activity)

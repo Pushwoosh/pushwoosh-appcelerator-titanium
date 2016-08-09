@@ -62,7 +62,9 @@ static __strong NSDictionary * gStartPushData = nil;
 	[pushManager sendAppOpen];
 
 	if (gStartPushData && !self.initialized) {
-		[self performSelectorOnMainThread:@selector(dispatchPush:) withObject:gStartPushData waitUntilDone:YES];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self dispatchPush:gStartPushData onStart:YES];
+		});
 	}
 
 	self.initialized = YES;
@@ -142,7 +144,9 @@ static __strong NSDictionary * gStartPushData = nil;
 	[[PushNotificationManager pushManager] registerForPushNotifications];
  
 	if (gStartPushData && !self.initialized) {
-		[self performSelectorOnMainThread:@selector(dispatchPush:) withObject:gStartPushData waitUntilDone:YES];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self dispatchPush:gStartPushData onStart:YES];
+		});
 	}
 		 
 	self.initialized = YES;
@@ -235,20 +239,32 @@ static __strong NSDictionary * gStartPushData = nil;
 		gStartPushData = pushNotification;
 	}
 	
-	[self dispatchPush:pushNotification];
+	[self dispatchPush:pushNotification onStart:onStart];
 }
 
-- (void) dispatchPush:(NSDictionary*)pushData
+- (void) dispatchPush:(NSDictionary*)pushData onStart:(BOOL)onStart
 {
 	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
+	
+	id alert = pushData[@"aps"][@"alert"];
+	NSString *message = alert;
+	if ([alert isKindOfClass:[NSDictionary class]]) {
+		message = alert[@"body"];
+	}
+	
+	NSDictionary *pushInfo = @{ @"data" : pushData, @"foreground" : @(!onStart), @"message" : message };
 
 	[self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
 
 	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-		[self.pushReceiveCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+		[self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
+	}
+	else if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
+		[self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
+		[self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
 	}
 	else {
-		[self.pushOpenCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+		[self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
 	}
 }
 
