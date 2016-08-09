@@ -8,11 +8,11 @@ var pushwoosh = require('com.pushwoosh.module');
 Ti.API.info("module is => " + pushwoosh);
 
 pushwoosh.onPushReceived(function(e) {
-	Ti.API.info('Push notification received: ' + JSON.stringify(e.data));
+	Ti.API.info('Push notification received: ' + JSON.stringify(e));
 });
 
 pushwoosh.onPushOpened(function(e) {
-	Ti.API.info('Push notification opened: ' + JSON.stringify(e.data));
+	Ti.API.info('Push notification opened: ' + JSON.stringify(e));
 });
 
 pushwoosh.initialize({ 
@@ -28,6 +28,11 @@ pushwoosh.registerForPushNotifications(
         Ti.API.error("Error during registration: " + e.error);
     }  
 );
+
+// Application icon badges
+//pushwoosh.setBadgeNumber(5);
+//pushwoosh.addBadgeNumber(3);
+//Ti.API.info('Badge number: ' + pushwoosh.getBadgeNumber());
 
 // Segmentation
 //pushwoosh.setTags({deviceName:"hello", deviceId:10});

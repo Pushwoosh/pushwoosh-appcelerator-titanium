@@ -91,6 +91,8 @@ static __strong NSDictionary * gStartPushData = nil;
 
 - (void)onPushOpened:(id)args
 {
+	args = [self wrapArguments:args];
+	
 	ENSURE_TYPE(args, NSArray);
 	
 	ENSURE_TYPE(args[0], KrollCallback);
@@ -100,6 +102,8 @@ static __strong NSDictionary * gStartPushData = nil;
 
 - (void)onPushReceived:(id)args
 {
+	args = [self wrapArguments:args];
+	
 	ENSURE_TYPE(args, NSArray);
 	
 	ENSURE_TYPE(args[0], KrollCallback);
@@ -169,19 +173,20 @@ static __strong NSDictionary * gStartPushData = nil;
 
 - (void)setTags:(id)args
 {
+	args = [self wrapArguments:args];
+	
 	NSDictionary *tags = args;
-	if ([args isKindOfClass: [NSArray class]]) {
-		// some versions of Titanium may pass argument in array
-		tags = args[0];
-	}
 	
-	ENSURE_TYPE(tags, NSDictionary);
+	ENSURE_ARG_COUNT(args, 1);
+	ENSURE_TYPE(args[0], NSDictionary);
 	
-	[[PushNotificationManager pushManager] setTags:tags];
+	[[PushNotificationManager pushManager] setTags:args[0]];
 }
 
 - (void)getLaunchNotification:(id)args
 {
+	args = [self wrapArguments:args];
+	
 	ENSURE_TYPE(args, NSArray);
 	ENSURE_TYPE(args[0], NSDictionary);
 	
@@ -196,7 +201,10 @@ static __strong NSDictionary * gStartPushData = nil;
 }
 
 - (void)setUserId:(id)args
-{	
+{
+	args = [self wrapArguments:args];
+	
+	ENSURE_ARG_COUNT(args, 1);
 	ENSURE_TYPE(args, NSString);
 
 	[[PushNotificationManager pushManager] setUserId:args];
@@ -216,6 +224,42 @@ static __strong NSDictionary * gStartPushData = nil;
 	[[PushNotificationManager pushManager] postEvent:event withAttributes:attributes];
 }
 
+- (void)setBadgeNumber:(id)args
+{
+	args = [self wrapArguments:args];
+	
+	ENSURE_ARG_COUNT(args, 1);
+	ENSURE_TYPE(args[0], NSNumber);
+	
+	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:[args[0] intValue]];
+}
+
+- (id)getBadgeNumber:(id)unused
+{
+	return @([[UIApplication sharedApplication] applicationIconBadgeNumber]);
+}
+
+- (void)addBadgeNumber:(id)args
+{
+	args = [self wrapArguments:args];
+	
+	ENSURE_ARG_COUNT(args, 1);
+	ENSURE_TYPE(args[0], NSNumber);
+	
+	[UIApplication sharedApplication].applicationIconBadgeNumber += [args[0] intValue];
+}
+
+#pragma Internal
+
+// For one argument Appcelerator may wrap it in NSArray or may not in a random way
+- (id)wrapArguments:(id)args
+{
+	if (![args isKindOfClass:[NSArray class]])
+		return @[ args ];
+
+	return args;
+}
+
 - (void)onDidRegisterForRemoteNotificationsWithDeviceToken:(NSString *)token
 {
 	NSLog(@"[DEBUG][PW-APPC] registered for pushes: %@", token);
@@ -231,9 +275,6 @@ static __strong NSDictionary * gStartPushData = nil;
 - (void)onPushAccepted:(PushNotificationManager *)manager withNotification:(NSDictionary *)pushNotification onStart:(BOOL)onStart
 {
 	NSLog(@"[DEBUG][PW-APPC] push accepted: onStart: %d, payload: %@", onStart, pushNotification);
-
-	//reset badge counter
-	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
 	if (onStart) {
 		gStartPushData = pushNotification;
