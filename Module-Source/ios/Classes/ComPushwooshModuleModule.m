@@ -249,6 +249,16 @@ static __strong NSDictionary * gStartPushData = nil;
 	[UIApplication sharedApplication].applicationIconBadgeNumber += [args[0] intValue];
 }
 
+- (id)getHwid:(id)unused
+{
+	return [[PushNotificationManager pushManager] getHWID];
+}
+
+- (id)getPushToken:(id)unused
+{
+	return [[PushNotificationManager pushManager] getPushToken];
+}
+
 #pragma Internal
 
 // For one argument Appcelerator may wrap it in NSArray or may not in a random way

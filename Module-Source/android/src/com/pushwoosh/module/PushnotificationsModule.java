@@ -273,18 +273,6 @@ public class PushnotificationsModule extends KrollModule
 	}
 
 	@Kroll.method
-	public void registerForPushNotifications(KrollFunction success)
-	{
-		registerForPushNotifications(success, null);
-	}
-
-	@Kroll.method
-	public void registerForPushNotifications()
-	{
-		registerForPushNotifications(null, null);
-	}
-
-	@Kroll.method
 	public void onPushOpened(KrollFunction callback)
 	{
 		pushOpenCallback = callback;
@@ -509,6 +497,22 @@ public class PushnotificationsModule extends KrollModule
 	public void postEvent(String event, HashMap attributes)
 	{
 		InAppFacade.postEvent(TiApplication.getInstance().getRootActivity(), event, (Map<String, Object>)attributes);
+	}
+
+//Function: getHwid
+// Returns Pushwoosh device hardware id
+	@Kroll.method
+	public String getHwid()
+	{
+		return PushManager.getPushwooshHWID(TiApplication.getInstance());
+	}
+
+//Function: getPushToken
+// Returns push notification token or null if device is not registered yet
+	@Kroll.method
+	public String getPushToken()
+	{
+		return PushManager.getPushToken(TiApplication.getInstance());
 	}
 
 	public void checkMessage(Intent intent)

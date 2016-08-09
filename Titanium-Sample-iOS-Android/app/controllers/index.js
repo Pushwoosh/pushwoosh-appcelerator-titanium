@@ -23,11 +23,14 @@ pushwoosh.initialize({
 pushwoosh.registerForPushNotifications(
 	function(e) {
         Ti.API.info('JS registration success event: ' + e.registrationId);
+        Ti.API.info('Push token ' + pushwoosh.getPushToken());
     },
     function(e) {
         Ti.API.error("Error during registration: " + e.error);
     }  
 );
+
+Ti.API.info('Pushwoosh hwid: ' + pushwoosh.getHwid());
 
 // Application icon badges
 //pushwoosh.setBadgeNumber(5);
