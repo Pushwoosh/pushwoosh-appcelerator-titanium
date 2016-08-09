@@ -15,7 +15,9 @@
 @property (strong) KrollCallback *successCallback;
 @property (strong) KrollCallback *errorCallback;
 @property (strong) KrollCallback *messageCallback;
+@property (strong) KrollCallback *pushOpenCallback;
+@property (strong) KrollCallback *pushReceiveCallback;
 
-@property BOOL registered;
+@property BOOL initialized;
 
 @end

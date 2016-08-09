@@ -4,34 +4,39 @@ function doClick(e) {
 
 $.index.open();
 
-var pushnotifications = require('com.pushwoosh.module');
-Ti.API.info("module is => " + pushnotifications);
+var pushwoosh = require('com.pushwoosh.module');
+Ti.API.info("module is => " + pushwoosh);
 
-pushnotifications.pushNotificationsRegister({
-  "pw_appid": "4FC89B6D14A655.46488481",
-  "gcm_projectid": "60756016005", // please note this is the project "number" not the "id" when viewed in the google API console.  You can find this under the project settings.
-  success:function(e)
-  {
-      Ti.API.info('JS registration success event: ' + e.registrationId);
-  },
-  error:function(e)
-  {
-      Ti.API.error("Error during registration: "+e.error);
-  },
-  callback:function(e) // called when a push notification is received
-  {
-      Ti.API.info('JS message event: ' + JSON.stringify(e.data));
-  }
+pushwoosh.onPushReceived(function(e) {
+	Ti.API.info('Push notification received: ' + JSON.stringify(e.data));
 });
 
+pushwoosh.onPushOpened(function(e) {
+	Ti.API.info('Push notification opened: ' + JSON.stringify(e.data));
+});
+
+pushwoosh.initialize({ 
+    "application" : "4FC89B6D14A655.46488481",
+    "gcm_project" : "60756016005",
+});
+
+pushwoosh.registerForPushNotifications(
+	function(e) {
+        Ti.API.info('JS registration success event: ' + e.registrationId);
+    },
+    function(e) {
+        Ti.API.error("Error during registration: " + e.error);
+    }  
+);
+
 // Segmentation
-//pushnotifications.setTags({deviceName:"hello", deviceId:10});
-//pushnotifications.setTags({"MyTag":["hello", "world"]});
+//pushwoosh.setTags({deviceName:"hello", deviceId:10});
+//pushwoosh.setTags({"MyTag":["hello", "world"]});
 
 // Geopushes
-//pushnotifications.startTrackingGeoPushes();
-//pushnotifications.stopTrackingGeoPushes();
+//pushwoosh.startTrackingGeoPushes();
+//pushwoosh.stopTrackingGeoPushes();
 
 // Inapp & Events
-//pushnotifications.setUserId("pushwooshid%42");
-//pushnotifications.postEvent("buttonPressed", { "buttonNumber" : 4, "buttonLabel" : "banner" });
+//pushwoosh.setUserId("pushwooshid%42");
+//pushwoosh.postEvent("buttonPressed", { "buttonNumber" : 4, "buttonLabel" : "banner" });

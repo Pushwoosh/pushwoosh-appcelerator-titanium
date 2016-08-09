@@ -213,9 +213,86 @@ public class PushnotificationsModule extends KrollModule
 	private KrollFunction successCallback = null;
 	private KrollFunction errorCallback = null;
 	private KrollFunction messageCallback = null;
+	private KrollFunction pushOpenCallback = null;
+	private KrollFunction pushReceiveCallback = null;
 	
 	PushManager mPushManager = null;
 	
+//Function: initialize
+//Call this to initialize pushwoosh and send application open event
+//
+//Example:
+//(start code)
+//pushnotifications.initialize({
+//  "pw_appid": "ENTER_PUSHWOOSH_APPID_HERE",
+//  "gcm_projectid": "ENTER_GOOGLE_PROJECTID_HERE",
+//});
+//(end)
+	@Kroll.method
+	public void initialize(HashMap options)
+	{
+		Log.d(LCAT, "initialize called");
+
+		// On Andoid < 4.0 registration is handled by IntentReceiver class
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			registerReceivers();
+		}
+
+		String pushwooshAppId = (String)options.get("application");
+		String googleProjectId = (String)options.get("gcm_project");
+		
+		checkMessage(TiApplication.getInstance().getRootActivity().getIntent());
+		resetIntentValues(TiApplication.getInstance().getRootActivity());
+
+		PushManager.initializePushManager(TiApplication.getInstance(), pushwooshAppId, googleProjectId);
+		mPushManager = PushManager.getInstance(TiApplication.getInstance());
+		mPushManager.setNotificationFactory(new NotificationFactory());
+		try
+		{
+			mPushManager.onStartup(TiApplication.getInstance());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
+	}
+
+//Function: pushNotificationsRegister
+//Call this to register for push notifications and retreive a push token
+	@Kroll.method
+	public void registerForPushNotifications(KrollFunction success, KrollFunction error)
+	{
+		successCallback = success;
+		errorCallback = error;
+
+		mPushManager.registerForPushNotifications();
+	}
+
+	@Kroll.method
+	public void registerForPushNotifications(KrollFunction success)
+	{
+		registerForPushNotifications(success, null);
+	}
+
+	@Kroll.method
+	public void registerForPushNotifications()
+	{
+		registerForPushNotifications(null, null);
+	}
+
+	@Kroll.method
+	public void onPushOpened(KrollFunction callback)
+	{
+		pushOpenCallback = callback;
+	}
+
+	@Kroll.method
+	public void onPushReceived(KrollFunction callback)
+	{
+		pushReceiveCallback = callback;
+	}
+
 //Function: pushNotificationsRegister
 //Call this to register for push notifications and retreive a push token
 //
@@ -241,7 +318,7 @@ public class PushnotificationsModule extends KrollModule
 	@Kroll.method
 	public void pushNotificationsRegister(HashMap options)
 	{
-		Log.d(LCAT, "Push: registering for pushes");
+		Log.w(LCAT, "<pushNotificationsRegister> method is deprecated! Use <initialize> and <register> instead");
 
 		// On Andoid < 4.0 registration is handled by IntentReceiver class
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -497,7 +574,24 @@ public class PushnotificationsModule extends KrollModule
 	}
 
 	public void sendMessage(final String messageData) {
-		if(messageCallback == null)
+
+		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				HashMap data = new HashMap();
+				data.put("data", messageData);
+
+				if (messageCallback != null)
+					messageCallback.call(getKrollObject(),data);
+
+				if (pushOpenCallback != null)
+					pushOpenCallback.call(getKrollObject(),data);
+			}
+		});
+	}
+
+	public void sendPushReceived(final String messageData) {
+		if (pushReceiveCallback == null)
 			return;
 
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
@@ -506,7 +600,7 @@ public class PushnotificationsModule extends KrollModule
 				HashMap data = new HashMap();
 				data.put("data", messageData);
 
-				messageCallback.call(getKrollObject(),data);
+				pushReceiveCallback.call(getKrollObject(),data);
 			}
 		});
 	}

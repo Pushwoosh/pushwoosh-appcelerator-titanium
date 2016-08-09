@@ -36,7 +36,7 @@ static __strong NSDictionary * gStartPushData = nil;
 	// you *must* call the superclass
 	[super startup];
 	
-	[self setRegistered:NO];
+	self.initialized = NO;
 
 	NSLog(@"[INFO][PW-APPC] %@ loaded", self);
 }
@@ -56,8 +56,71 @@ static __strong NSDictionary * gStartPushData = nil;
 	return appName;
 }
 
+- (void)initialize:(id)args
+{
+	ENSURE_TYPE(args, NSArray);
+	ENSURE_ARG_COUNT(args, 1);
+
+	ENSURE_TYPE(args[0], NSDictionary);
+	NSDictionary *options = args[0];
+
+	NSString* appCode = options[@"application"];
+
+	ENSURE_TYPE(appCode, NSString);
+
+	[PushNotificationManager initializeWithAppCode:appCode appName:[ComPushwooshModuleModule readAppName]];
+	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
+	[pushManager setShowPushnotificationAlert:NO];
+	[pushManager setDelegate:self];
+	[pushManager sendAppOpen];
+
+	if (gStartPushData && !self.initialized) {
+		[self performSelectorOnMainThread:@selector(dispatchPush:) withObject:gStartPushData waitUntilDone:YES];
+	}
+
+	self.initialized = YES;
+}
+
+- (void)registerForPushNotifications:(id)args
+{
+	if (args) {
+		ENSURE_TYPE(args, NSArray);
+		
+		if ([args count] > 0) {
+			ENSURE_TYPE(args[0], KrollCallback);
+			self.successCallback = args[0];
+		}
+
+		if ([args count] > 1) {
+			ENSURE_TYPE(args[1], KrollCallback);
+			self.errorCallback = args[1];
+		}
+	}
+
+	[[PushNotificationManager pushManager] registerForPushNotifications];
+}
+
+- (void)onPushOpened:(id)args
+{
+	ENSURE_TYPE(args, NSArray);
+	
+	ENSURE_TYPE(args[0], KrollCallback);
+	self.pushOpenCallback = args[0];
+	
+}
+
+- (void)onPushReceived:(id)args
+{
+	ENSURE_TYPE(args, NSArray);
+	
+	ENSURE_TYPE(args[0], KrollCallback);
+	self.pushReceiveCallback = args[0];
+}
+
 - (void)pushNotificationsRegister:(id)args
 {
+	NSLog(@"[WARN][PW-APPC] <pushNotificationsRegister> is deprecated! Use <initialize> and <register> instead");
+
 	ENSURE_TYPE(args, NSArray);
 	ENSURE_ARG_COUNT(args, 1);
 	
@@ -91,11 +154,11 @@ static __strong NSDictionary * gStartPushData = nil;
 	NSLog(@"[DEBUG][PW-APPC] registering for push notifications");
 	[[PushNotificationManager pushManager] registerForPushNotifications];
  
-	if (gStartPushData && !self.registered) {
+	if (gStartPushData && !self.initialized) {
 		[self performSelectorOnMainThread:@selector(dispatchPush:) withObject:gStartPushData waitUntilDone:YES];
 	}
 		 
-	[self setRegistered:YES];
+	self.initialized = YES;
 }
 
 - (void)unregister:(id)unused
@@ -165,7 +228,7 @@ static __strong NSDictionary * gStartPushData = nil;
 - (void)onDidRegisterForRemoteNotificationsWithDeviceToken:(NSString *)token
 {
 	NSLog(@"[DEBUG][PW-APPC] registered for pushes: %@", token);
-	[self.successCallback call:@[ @{ @"registrationId" : token} ] thisObject:nil];
+	[self.successCallback call:@[ @{ @"registrationId" : token } ] thisObject:nil];
 }
 
 - (void)onDidFailToRegisterForRemoteNotificationsWithError:(NSError*)error
@@ -191,7 +254,15 @@ static __strong NSDictionary * gStartPushData = nil;
 - (void) dispatchPush:(NSDictionary*)pushData
 {
 	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
+	
 	[self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+
+	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+		[self.pushReceiveCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+	}
+	else {
+		[self.pushOpenCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+	}
 }
 
 @end
