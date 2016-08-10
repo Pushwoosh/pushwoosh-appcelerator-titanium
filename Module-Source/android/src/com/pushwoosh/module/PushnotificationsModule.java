@@ -38,31 +38,6 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 
-//Class: PushnotificationsModule
-//Class to interact with Pushwoosh Push Notifications module
-//
-//Example:
-//(start code)
-//var pushnotifications = require('com.pushwoosh.module');
-//Ti.API.info("module is => " + pushnotifications);
-//	
-//pushnotifications.pushNotificationsRegister({
-//  "pw_appid": "ENTER_PUSHWOOSH_APPID_HERE",
-//  "gcm_projectid": "ENTER_GOOGLE_PROJECTID_HERE",
-//	success:function(e)
-//	{
-//		Ti.API.info('JS registration success event: ' + e.registrationId);
-//	},
-//	error:function(e)
-//	{
-//		Ti.API.error("Error during registration: "+e.error);
-//	},
-//	callback:function(e) // called when a push notification is received
-//	{
-//		Ti.API.info('JS message event: ' + JSON.stringify(e.data));
-//	}
-//});
-//(end)
 @Kroll.module(name="Pushwoosh", id="com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule
 {
@@ -221,16 +196,7 @@ public class PushnotificationsModule extends KrollModule
 	
 	PushManager mPushManager = null;
 	
-//Function: initialize
-//Call this to initialize pushwoosh and send application open event
-//
-//Example:
-//(start code)
-//pushnotifications.initialize({
-//  "pw_appid": "ENTER_PUSHWOOSH_APPID_HERE",
-//  "gcm_projectid": "ENTER_GOOGLE_PROJECTID_HERE",
-//});
-//(end)
+
 	@Kroll.method
 	public void initialize(HashMap options)
 	{
@@ -261,8 +227,6 @@ public class PushnotificationsModule extends KrollModule
 		}
 	}
 
-//Function: pushNotificationsRegister
-//Call this to register for push notifications and retreive a push token
 	@Kroll.method
 	public void registerForPushNotifications(KrollFunction success, KrollFunction error)
 	{
@@ -284,28 +248,6 @@ public class PushnotificationsModule extends KrollModule
 		pushReceiveCallback = callback;
 	}
 
-//Function: pushNotificationsRegister
-//Call this to register for push notifications and retreive a push token
-//
-//Example:
-//(start code)
-//pushnotifications.pushNotificationsRegister({
-//  "pw_appid": "ENTER_PUSHWOOSH_APPID_HERE",
-//  "gcm_projectid": "ENTER_GOOGLE_PROJECTID_HERE",
-//	success:function(e)
-//	{
-//		Ti.API.info('JS registration success event: ' + e.registrationId);
-//	},
-//	error:function(e)
-//	{
-//		Ti.API.error("Error during registration: "+e.error);
-//	},
-//	callback:function(e) // called when a push notification is received
-//	{
-//		Ti.API.info('JS message event: ' + JSON.stringify(e.data));
-//	}
-//});
-//(end)
 	@Kroll.method
 	public void pushNotificationsRegister(HashMap options)
 	{
@@ -345,9 +287,7 @@ public class PushnotificationsModule extends KrollModule
 
 		return;
 	}
-	
-//Function: unregister
-//Unregisters device from push notifications
+
 	@Kroll.method
 	public void unregister() {
 		Log.d(LCAT, "unregister called");
@@ -358,8 +298,6 @@ public class PushnotificationsModule extends KrollModule
 		mPushManager.unregisterForPushNotifications();	
 	}
 	
-//Function: startTrackingGeoPushes
-//Starts geolocation based push notifications. You need to configure Geozones in Pushwoosh Control panel.
 	@Kroll.method
 	public void startTrackingGeoPushes() {
 		Log.d(LCAT, "start tracking geo pushes called");
@@ -370,8 +308,6 @@ public class PushnotificationsModule extends KrollModule
 		mPushManager.startTrackingGeoPushes();
 	}
  
-//Function: stopTrackingGeoPushes
-//Stops geolocation based push notifications
 	@Kroll.method
 	public void stopTrackingGeoPushes() {
 		Log.d(LCAT, "stop tracking geo pushes called");
@@ -382,17 +318,6 @@ public class PushnotificationsModule extends KrollModule
 		mPushManager.stopTrackingGeoPushes();
 	}
 
-//Function: setTags
-//Call this to set tags for the device
-//
-//Example:
-//sets the following tags: "deviceName" with value "hello" and "deviceId" with value 10
-//(start code)
-//	pushnotifications.setTags({deviceName:"hello", deviceId:10});
-//
-//	//setings list tags "MyTag" with values (array) "hello", "world"
-//	pushnotifications.setTags({"MyTag":["hello", "world"]});
-//(end)	
 	@Kroll.method
 	public void setTags(HashMap params)
 	{
@@ -413,94 +338,66 @@ public class PushnotificationsModule extends KrollModule
 		}
 	}
 
-//Function: scheduleLocalNotification
-//Android only, Creates local notification.
-//
-//Example:
-//(start code)
-//pushnotification.scheduleLocalNotification("Your pumpkins are ready!", 30);
-//(end)
 	@Kroll.method
 	public int scheduleLocalNotification(String message, int seconds)
 	{
 		return PushManager.scheduleLocalNotification(TiApplication.getInstance(), message, seconds);
 	}
 
-//Function: clearLocalNotification
-//Android only, Clears pending local notification created by <scheduleLocalNotification>
 	@Kroll.method
 	public void clearLocalNotification(int id)
 	{
 		PushManager.clearLocalNotification(TiApplication.getInstance(), id);
 	}
 	
-//Function: clearLocalNotifications
-//Android only, Clears all pending local notifications created by <scheduleLocalNotification>
 	@Kroll.method
 	public void clearLocalNotifications()
 	{
 		PushManager.clearLocalNotifications(TiApplication.getInstance());
 	}
 
-//Function: setMultiNotificationMode
-//Android only, Allows multiple notifications in notification bar.
 	@Kroll.method
 	public void setMultiNotificationMode()
 	{
 		PushManager.setMultiNotificationMode(TiApplication.getInstance());
 	}
 
-//Function: setSimpleNotificationMode
-//Android only, Allows only the last notification in notification bar.
 	@Kroll.method
 	public void setSimpleNotificationMode()
 	{
 		PushManager.setSimpleNotificationMode(TiApplication.getInstance());
 	}
 
-
-//Function: setBadgeNumber
-//Android only, Set application icon badge number
 	@Kroll.method
 	public void setBadgeNumber(int badgeNumber)
 	{
 		mPushManager.setBadgeNumber(badgeNumber);
 	}
 
-//Function: getBadgeNumber
-//Android only, Get application icon badge number
 	@Kroll.method
 	public int getBadgeNumber()
 	{
 		return mPushManager.getBadgeNumber();
 	}
 
-//Function: addBadgeNumber
-//Android only, Add to application icon badge number
 	@Kroll.method
 	public void addBadgeNumber(int deltaBadge)
 	{
 		mPushManager.addBadgeNumber(deltaBadge);
 	}
 
-//Function: setUserId
-// Set User indentifier.  This could be Facebook ID, username or email, or any other user ID.  This allows data and events to be matched across multiple user devices.
 	@Kroll.method
 	public void setUserId(String userId)
 	{
 		mPushManager.setUserId(TiApplication.getInstance(), userId);
 	}
 
-//Function: postEvent
-// Post events for In-App Messages.  This can trigger In-App message display as specified in Pushwoosh Control Panel.
 	@Kroll.method
 	public void postEvent(String event, HashMap attributes)
 	{
 		InAppFacade.postEvent(TiApplication.getInstance().getRootActivity(), event, (Map<String, Object>)attributes);
 	}
 
-//Function: getHwid
-// Returns Pushwoosh device hardware id
 	@Kroll.method
 	public String getHwid()
 	{
