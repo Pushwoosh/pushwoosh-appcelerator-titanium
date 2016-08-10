@@ -57,7 +57,13 @@ static __strong NSDictionary * gStartPushData = nil;
 
 	[PushNotificationManager initializeWithAppCode:appCode appName:nil];
 	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
-	[pushManager setShowPushnotificationAlert:NO];
+	
+	if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_ALERT_TYPE"] &&
+		![[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_SHOW_ALERT"]) {
+		// do not show alert in foreground by default
+		[pushManager setShowPushnotificationAlert:NO];
+	}
+	
 	[pushManager setDelegate:self];
 	[pushManager sendAppOpen];
 
