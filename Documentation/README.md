@@ -13,17 +13,17 @@ pushwoosh.onPushOpened(function(e) {
 });
 
 pushwoosh.initialize({ 
-    "application" : "ENTER_PUSHWOOSH_APPID_HERE",
-    "gcm_project" : "ENTER_GOOGLE_PROJECTID_HERE"
+	"application" : "ENTER_PUSHWOOSH_APPID_HERE",
+	"gcm_project" : "ENTER_GOOGLE_PROJECT_NUMBER_HERE"
 });
 
 pushwoosh.registerForPushNotifications(
   function(e) {
-        Ti.API.info('Registered with push token: ' + e.registrationId);
-    },
-    function(e) {
-        Ti.API.error("Error during registration: " + e.error);
-    }  
+		Ti.API.info('Registered with push token: ' + e.registrationId);
+	},
+	function(e) {
+		Ti.API.error("Error during registration: " + e.error);
+	}  
 );
 ```
 
@@ -31,6 +31,8 @@ pushwoosh.registerForPushNotifications(
 ## Method summary
 [initialize(config)](#init)  
 [registerForPushNotifications(success, fail)](#registerforpushnotifications)  
+[onPushReceived(callback)](#onpushreceived)  
+[onPushOpened(callback)](#onpushopened)  
 [pushNotificationsRegister(config)](#pushnotificationsregister)  
 [unregister()](#unregister)  
 [getPushToken(success)](#getpushtoken)  
@@ -55,7 +57,7 @@ pushwoosh.registerForPushNotifications(
 Initializes Pushwoosh module with application id and google project number.
 
 ```js
-pushwoosh.initialize({ "application" : "ENTER_PUSHWOOSH_APPID_HERE", "gcm_project" : "ENTER_GOOGLE_PROJECTID_HERE" });
+pushwoosh.initialize({ "application" : "ENTER_PUSHWOOSH_APPID_HERE", "gcm_project" : "ENTER_GOOGLE_PROJECT_NUMBER_HERE" });
 ```
 
 * **config.application** - Pushwoosh application id
@@ -68,13 +70,53 @@ pushwoosh.initialize({ "application" : "ENTER_PUSHWOOSH_APPID_HERE", "gcm_projec
 Registers current device for push notifications.
 
 ```js
-pushwoosh.registerForPushNotifications(function(e) {}, function(e) {});
+pushwoosh.registerForPushNotifications(
+	function(e) {
+		var pushToken = e.registrationId;
+
+		// handle successful registration
+	},
+	function(e) {
+		var errorMessage = e.error;
+		
+		// handle registration error
+	}
+);
 ```
 
-* **success** - registration success callback. Receives push token as parameter.
-* **fail** - registration failure callback.
-
 NOTE: if user does not allow application to receive push notifications and `UIBackgroundModes remote-notificaion` is not set in **Info.plist** none of these callbacks will be called.
+
+---
+
+### onPushReceived
+
+Invokes callback when push notification is received. If application is closed callback is not called.
+
+```js
+pushwoosh.onPushReceived(function(e) {
+	var message = e.message;
+	var foreground = e.foreground;
+	var data = e.data;
+
+	// handle push notification receive event here
+});
+```
+
+---
+
+### onPushOpened
+
+Invokes callback when push notification is opened.
+
+```js
+pushwoosh.onPushOpened(function(e) {
+	var message = e.message;
+	var foreground = e.foreground;
+	var data = e.data;
+
+	// handle push notification open event here
+});
+```
 
 ---
 
