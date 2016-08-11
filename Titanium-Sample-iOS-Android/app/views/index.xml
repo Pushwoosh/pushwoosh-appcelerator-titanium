@@ -1,5 +1,13 @@
 <Alloy>
 	<Window class="container">
-		<Label id="label" onClick="doClick">Hello, World</Label>
+		<View class="status">
+			<Label class="heading">Pushwoosh status</Label>
+			<Label>Push registration: </Label>
+			<Label id="pushRegistration">Not registered</Label>
+			<Label>Push message: </Label> 
+			<Label id="pushMessage"></Label>
+			<Label>Push data: </Label> 
+			<Label id="pushData"></Label>
+		</View>
 	</Window>
 </Alloy>
