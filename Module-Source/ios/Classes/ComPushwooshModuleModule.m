@@ -303,13 +303,31 @@ static __strong NSDictionary * gStartPushData = nil;
 {
 	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
 	
+	NSMutableDictionary *pushInfo = [NSMutableDictionary new];
+	
+	pushInfo[@"data"] = pushData;
+	pushInfo[@"foreground"] = @(!onStart);
+	
 	id alert = pushData[@"aps"][@"alert"];
 	NSString *message = alert;
 	if ([alert isKindOfClass:[NSDictionary class]]) {
 		message = alert[@"body"];
 	}
 	
-	NSDictionary *pushInfo = @{ @"data" : pushData, @"foreground" : @(!onStart), @"message" : message };
+	if (message) {
+		pushInfo[@"message"] = message;
+	}
+	
+	NSString *userdata = pushData[@"u"];
+	if (userdata) {
+		id parsedData = [NSJSONSerialization JSONObjectWithData:[userdata dataUsingEncoding:NSUTF8StringEncoding]
+														options:NSJSONReadingMutableContainers
+														  error:nil];
+		
+		if (parsedData) {
+			pushInfo[@"extras"] = parsedData;
+		}
+	}
 
 	[self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
 

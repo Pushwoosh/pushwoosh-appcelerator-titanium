@@ -514,10 +514,12 @@ public class PushnotificationsModule extends KrollModule
 			JSONObject json = new JSONObject(messageData);
 			Boolean foreground = json.optBoolean("foreground");
 			String message = json.optString("title");
+			JSONObject userData = json.optJSONObject("userdata");
 
 			result.put("data", JsonUtils.jsonToMap(json));
 			result.put("foreground", foreground);
 			result.put("message", message);
+			result.put("extras", JsonUtils.jsonToMap(userData));
 		}
 		catch(Exception e)
 		{
