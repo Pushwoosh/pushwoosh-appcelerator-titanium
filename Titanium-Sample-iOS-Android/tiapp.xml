@@ -35,6 +35,9 @@
                 <false/>
                 <key>UIStatusBarStyle</key>
                 <string>UIStatusBarStyleDefault</string>
+                <!-- Set value to ALERT or BANNER to change notification appearance in foreground -->
+                <key>Pushwoosh_ALERT_TYPE</key>
+                <string>NONE</string>
             </dict>
         </plist>
     </ios>

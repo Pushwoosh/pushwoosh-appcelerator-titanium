@@ -64,6 +64,11 @@ static __strong NSDictionary * gStartPushData = nil;
 		[pushManager setShowPushnotificationAlert:NO];
 	}
 	
+	NSString * alertTypeString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_ALERT_TYPE"];
+	if([alertTypeString isKindOfClass:[NSString class]] && [alertTypeString isEqualToString:@"NONE"]) {
+		[pushManager setShowPushnotificationAlert:NO];
+	}
+	
 	[pushManager setDelegate:self];
 	[pushManager sendAppOpen];
 
