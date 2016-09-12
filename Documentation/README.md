@@ -19,10 +19,14 @@ pushwoosh.initialize({
 
 pushwoosh.registerForPushNotifications(
   function(e) {
+      setTimeout(function() {
 		Ti.API.info('Registered with push token: ' + e.registrationId);
+		}, 0);
 	},
 	function(e) {
+	setTimeout(function() {
 		Ti.API.error("Error during registration: " + e.error);
+		}, 0);
 	}  
 );
 ```
