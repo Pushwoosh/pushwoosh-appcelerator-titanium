@@ -1,3 +1,6 @@
+Current version: 2.0.1
+=========================
+[iOS] Fixed referencing non-Public API to pass project validation
 Current version: 2.0.0
 =========================
 Separate methods for initializing, registering and receiving push notifications
