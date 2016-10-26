@@ -1,3 +1,13 @@
+Current version: 2.1.0
+=========================
+Pushwoosh Appcelerator Module 2.1.0
+
+Added:
+     Application icon badge number support for Sony, HUAWEI, ZUK and OPPO
+
+Modified:
+    Pushwoosh iOS SDK updated to 4.1.8 (https://github.com/Pushwoosh/pushwoosh-ios-sdk/releases)
+    Pushwoosh Android SDK updated to 4.10.1
 Current version: 2.0.1
 =========================
 [iOS] Fixed referencing non-Public API to pass project validation
