@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
-    <id>com.pushwoosh.testing</id>
+    <id>com.pushwoosh.demoapp</id>
     <name>PushwooshSample</name>
     <version>1.0</version>
     <publisher>not specified</publisher>
@@ -35,6 +35,9 @@
                 <false/>
                 <key>UIStatusBarStyle</key>
                 <string>UIStatusBarStyleDefault</string>
+                <!-- Set value to ALERT or BANNER to change notification appearance in foreground -->
+                <key>Pushwoosh_ALERT_TYPE</key>
+                <string>NONE</string>
             </dict>
         </plist>
     </ios>
@@ -42,7 +45,7 @@
         <manifest>
             <application>
                 <!-- Set to false if you want to disable automatic push open in foreground -->
-                <meta-data android:name="PW_BROADCAST_PUSH" android:value="true" />
+                <meta-data android:name="PW_BROADCAST_PUSH" android:value="true"/>
             </application>
         </manifest>
     </android>
@@ -65,7 +68,7 @@
         <target device="iphone">true</target>
         <target device="mobileweb">false</target>
     </deployment-targets>
-    <sdk-version>5.1.1.GA</sdk-version>
+    <sdk-version>5.5.0.GA</sdk-version>
     <plugins>
         <plugin version="1.0">ti.alloy</plugin>
     </plugins>

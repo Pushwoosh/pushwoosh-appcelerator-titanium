@@ -55,18 +55,18 @@ public class IntentReceiver extends BroadcastReceiver
 			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 				return;
 				
-				if(PushnotificationsModule.INSTANCE != null)
-				{
-						Log.d("IntentReceiver", "Registering: INSTANCE NOT NULL");
+			if(PushnotificationsModule.INSTANCE != null)
+			{
+				Log.d("IntentReceiver", "Registering: INSTANCE NOT NULL");
 
-						PushnotificationsModule.INSTANCE.checkMessage(intent);
-				}
-				else
-				{
-						Log.d("IntentReceiver", "Registering: INSTANCE IS NULL");
-				}
+					PushnotificationsModule.INSTANCE.checkMessage(intent);
+			}
+			else
+			{
+				Log.d("IntentReceiver", "Registering: INSTANCE IS NULL");
+			}
 
-				return;
+			return;
 		}
 
 		Bundle pushBundle = PushManagerImpl.preHandlePush(context, intent);

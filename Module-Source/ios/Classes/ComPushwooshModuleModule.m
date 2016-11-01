@@ -36,32 +36,99 @@ static __strong NSDictionary * gStartPushData = nil;
 	// you *must* call the superclass
 	[super startup];
 	
-	[self setRegistered:NO];
+	self.initialized = NO;
 
 	NSLog(@"[INFO][PW-APPC] %@ loaded", self);
 }
 
 #pragma Public APIs
 
-+ (NSString *)readAppName {
-	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+- (void)initialize:(id)args
+{
+	ENSURE_TYPE(args, NSArray);
+	ENSURE_ARG_COUNT(args, 1);
+
+	ENSURE_TYPE(args[0], NSDictionary);
+	NSDictionary *options = args[0];
+
+	NSString* appCode = options[@"application"];
+
+	ENSURE_TYPE(appCode, NSString);
+
+	[PushNotificationManager initializeWithAppCode:appCode appName:nil];
+	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
 	
-	if(!appName)
-		appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
-	
-	if(!appName) {
-		appName = @"";
+	if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_ALERT_TYPE"] &&
+		![[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_SHOW_ALERT"]) {
+		// do not show alert in foreground by default
+		[pushManager setShowPushnotificationAlert:NO];
 	}
 	
-	return appName;
+	NSString * alertTypeString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_ALERT_TYPE"];
+	if([alertTypeString isKindOfClass:[NSString class]] && [alertTypeString isEqualToString:@"NONE"]) {
+		[pushManager setShowPushnotificationAlert:NO];
+	}
+	
+	[pushManager setDelegate:self];
+	[pushManager sendAppOpen];
+
+	if (gStartPushData && !self.initialized) {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self dispatchPush:gStartPushData onStart:YES];
+		});
+	}
+
+	self.initialized = YES;
+}
+
+- (void)registerForPushNotifications:(id)args
+{
+	if (args) {
+		ENSURE_TYPE(args, NSArray);
+		
+		if ([args count] > 0) {
+			ENSURE_TYPE(args[0], KrollCallback);
+			self.successCallback = args[0];
+		}
+
+		if ([args count] > 1) {
+			ENSURE_TYPE(args[1], KrollCallback);
+			self.errorCallback = args[1];
+		}
+	}
+
+	[[PushNotificationManager pushManager] registerForPushNotifications];
+}
+
+- (void)onPushOpened:(id)args
+{
+	args = [self wrapArguments:args];
+	
+	ENSURE_TYPE(args, NSArray);
+	
+	ENSURE_TYPE(args[0], KrollCallback);
+	self.pushOpenCallback = args[0];
+	
+}
+
+- (void)onPushReceived:(id)args
+{
+	args = [self wrapArguments:args];
+	
+	ENSURE_TYPE(args, NSArray);
+	
+	ENSURE_TYPE(args[0], KrollCallback);
+	self.pushReceiveCallback = args[0];
 }
 
 - (void)pushNotificationsRegister:(id)args
 {
+	NSLog(@"[WARN][PW-APPC] <pushNotificationsRegister> is deprecated! Use <initialize> and <register> instead");
+
 	ENSURE_TYPE(args, NSArray);
 	ENSURE_ARG_COUNT(args, 1);
 	
-	ENSURE_TYPE(args[0], NSDictionary)
+	ENSURE_TYPE(args[0], NSDictionary);
 	NSDictionary *options = args[0];
 	
 	if (options[@"success"]) {
@@ -81,7 +148,7 @@ static __strong NSDictionary * gStartPushData = nil;
 	NSString* appCode = options[@"pw_appid"];
 	ENSURE_TYPE(appCode, NSString);
 
-	[PushNotificationManager initializeWithAppCode:appCode appName:[ComPushwooshModuleModule readAppName]];
+	[PushNotificationManager initializeWithAppCode:appCode appName:nil];
 	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
 	[pushManager setShowPushnotificationAlert:NO];
 	[pushManager setDelegate:self];
@@ -91,11 +158,13 @@ static __strong NSDictionary * gStartPushData = nil;
 	NSLog(@"[DEBUG][PW-APPC] registering for push notifications");
 	[[PushNotificationManager pushManager] registerForPushNotifications];
  
-	if (gStartPushData && !self.registered) {
-		[self performSelectorOnMainThread:@selector(dispatchPush:) withObject:gStartPushData waitUntilDone:YES];
+	if (gStartPushData && !self.initialized) {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self dispatchPush:gStartPushData onStart:YES];
+		});
 	}
 		 
-	[self setRegistered:YES];
+	self.initialized = YES;
 }
 
 - (void)unregister:(id)unused
@@ -115,19 +184,20 @@ static __strong NSDictionary * gStartPushData = nil;
 
 - (void)setTags:(id)args
 {
+	args = [self wrapArguments:args];
+	
 	NSDictionary *tags = args;
-	if ([args isKindOfClass: [NSArray class]]) {
-		// some versions of Titanium may pass argument in array
-		tags = args[0];
-	}
 	
-	ENSURE_TYPE(tags, NSDictionary);
+	ENSURE_ARG_COUNT(args, 1);
+	ENSURE_TYPE(args[0], NSDictionary);
 	
-	[[PushNotificationManager pushManager] setTags:tags];
+	[[PushNotificationManager pushManager] setTags:args[0]];
 }
 
 - (void)getLaunchNotification:(id)args
 {
+	args = [self wrapArguments:args];
+	
 	ENSURE_TYPE(args, NSArray);
 	ENSURE_TYPE(args[0], NSDictionary);
 	
@@ -141,10 +211,80 @@ static __strong NSDictionary * gStartPushData = nil;
 	}, NO);
 }
 
+- (void)setUserId:(id)args
+{
+	args = [self wrapArguments:args];
+	
+	ENSURE_ARG_COUNT(args, 1);
+	ENSURE_TYPE(args, NSString);
+
+	[[PushNotificationManager pushManager] setUserId:args];
+}
+
+- (void)postEvent:(id)args
+{
+	ENSURE_TYPE(args, NSArray);
+	ENSURE_ARG_COUNT(args, 2);
+
+	ENSURE_TYPE(args[0], NSString);
+	NSString *event = args[0];
+
+	ENSURE_TYPE(args[1], NSDictionary);
+	NSDictionary *attributes = args[1];
+
+	[[PushNotificationManager pushManager] postEvent:event withAttributes:attributes];
+}
+
+- (void)setBadgeNumber:(id)args
+{
+	args = [self wrapArguments:args];
+	
+	ENSURE_ARG_COUNT(args, 1);
+	ENSURE_TYPE(args[0], NSNumber);
+	
+	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:[args[0] intValue]];
+}
+
+- (id)getBadgeNumber:(id)unused
+{
+	return @([[UIApplication sharedApplication] applicationIconBadgeNumber]);
+}
+
+- (void)addBadgeNumber:(id)args
+{
+	args = [self wrapArguments:args];
+	
+	ENSURE_ARG_COUNT(args, 1);
+	ENSURE_TYPE(args[0], NSNumber);
+	
+	[UIApplication sharedApplication].applicationIconBadgeNumber += [args[0] intValue];
+}
+
+- (id)getHwid:(id)unused
+{
+	return [[PushNotificationManager pushManager] getHWID];
+}
+
+- (id)getPushToken:(id)unused
+{
+	return [[PushNotificationManager pushManager] getPushToken];
+}
+
+#pragma Internal
+
+// For one argument Appcelerator may wrap it in NSArray or may not in a random way
+- (id)wrapArguments:(id)args
+{
+	if (![args isKindOfClass:[NSArray class]])
+		return @[ args ];
+
+	return args;
+}
+
 - (void)onDidRegisterForRemoteNotificationsWithDeviceToken:(NSString *)token
 {
 	NSLog(@"[DEBUG][PW-APPC] registered for pushes: %@", token);
-	[self.successCallback call:@[ @{ @"registrationId" : token} ] thisObject:nil];
+	[self.successCallback call:@[ @{ @"registrationId" : token } ] thisObject:nil];
 }
 
 - (void)onDidFailToRegisterForRemoteNotificationsWithError:(NSError*)error
@@ -157,20 +297,55 @@ static __strong NSDictionary * gStartPushData = nil;
 {
 	NSLog(@"[DEBUG][PW-APPC] push accepted: onStart: %d, payload: %@", onStart, pushNotification);
 
-	//reset badge counter
-	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-
 	if (onStart) {
 		gStartPushData = pushNotification;
 	}
 	
-	[self dispatchPush:pushNotification];
+	[self dispatchPush:pushNotification onStart:onStart];
 }
 
-- (void) dispatchPush:(NSDictionary*)pushData
+- (void) dispatchPush:(NSDictionary*)pushData onStart:(BOOL)onStart
 {
 	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
+	
+	NSMutableDictionary *pushInfo = [NSMutableDictionary new];
+	
+	pushInfo[@"data"] = pushData;
+	pushInfo[@"foreground"] = @(!onStart);
+	
+	id alert = pushData[@"aps"][@"alert"];
+	NSString *message = alert;
+	if ([alert isKindOfClass:[NSDictionary class]]) {
+		message = alert[@"body"];
+	}
+	
+	if (message) {
+		pushInfo[@"message"] = message;
+	}
+	
+	NSString *userdata = pushData[@"u"];
+	if (userdata) {
+		id parsedData = [NSJSONSerialization JSONObjectWithData:[userdata dataUsingEncoding:NSUTF8StringEncoding]
+														options:NSJSONReadingMutableContainers
+														  error:nil];
+		
+		if (parsedData) {
+			pushInfo[@"extras"] = parsedData;
+		}
+	}
+
 	[self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+
+	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+		[self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
+	}
+	else if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
+		[self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
+		[self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
+	}
+	else {
+		[self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
+	}
 }
 
 @end

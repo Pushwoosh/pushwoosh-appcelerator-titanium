@@ -1,9 +1,9 @@
 eclipse.preferences.version=1
 iosLaunchConfigurationAttributes/ATTR_MINIFY=true
-iosLaunchConfigurationAttributes/ATTR_PROJECT_NAME=Titanium-Sample-iOS-Android
+iosLaunchConfigurationAttributes/ATTR_PROJECT_NAME=PushwooshSample
 iosLaunchConfigurationAttributes/ATTR_UPLOAD_DEBUG_SYMBOLS=false
-iosLaunchConfigurationAttributes/appid=com.pushwoosh.testing
+iosLaunchConfigurationAttributes/appid=com.pushwoosh.demoapp
 iosLaunchConfigurationAttributes/certificate=Max Konev (M6E83N8DU5)
 iosLaunchConfigurationAttributes/keychain=
-iosLaunchConfigurationAttributes/sdk_version=9.2
-iosLaunchConfigurationAttributes/uuid=e1f1f44a-2feb-461a-99f5-c2c349289678
+iosLaunchConfigurationAttributes/sdk_version=10.0
+iosLaunchConfigurationAttributes/uuid=7fb77633-24d1-4017-94eb-d0d600553224

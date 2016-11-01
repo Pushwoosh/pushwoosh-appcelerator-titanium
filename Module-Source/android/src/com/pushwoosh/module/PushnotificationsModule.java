@@ -31,34 +31,13 @@ import android.content.pm.PackageManager;
 import com.pushwoosh.BasePushMessageReceiver;
 import com.pushwoosh.BaseRegistrationReceiver;
 import com.pushwoosh.PushManager;
+import com.pushwoosh.inapp.InAppFacade;
+import com.pushwoosh.internal.utils.JsonUtils;
+
+import org.json.JSONObject;
 
 import android.os.Bundle;
 
-//Class: PushnotificationsModule
-//Class to interact with Pushwoosh Push Notifications module
-//
-//Example:
-//(start code)
-//var pushnotifications = require('com.pushwoosh.module');
-//Ti.API.info("module is => " + pushnotifications);
-//	
-//pushnotifications.pushNotificationsRegister({
-//  "pw_appid": "ENTER_PUSHWOOSH_APPID_HERE",
-//  "gcm_projectid": "ENTER_GOOGLE_PROJECTID_HERE",
-//	success:function(e)
-//	{
-//		Ti.API.info('JS registration success event: ' + e.registrationId);
-//	},
-//	error:function(e)
-//	{
-//		Ti.API.error("Error during registration: "+e.error);
-//	},
-//	callback:function(e) // called when a push notification is received
-//	{
-//		Ti.API.info('JS message event: ' + JSON.stringify(e.data));
-//	}
-//});
-//(end)
 @Kroll.module(name="Pushwoosh", id="com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule
 {
@@ -212,35 +191,67 @@ public class PushnotificationsModule extends KrollModule
 	private KrollFunction successCallback = null;
 	private KrollFunction errorCallback = null;
 	private KrollFunction messageCallback = null;
+	private KrollFunction pushOpenCallback = null;
+	private KrollFunction pushReceiveCallback = null;
 	
 	PushManager mPushManager = null;
 	
-//Function: pushNotificationsRegister
-//Call this to register for push notifications and retreive a push token
-//
-//Example:
-//(start code)
-//pushnotifications.pushNotificationsRegister({
-//  "pw_appid": "ENTER_PUSHWOOSH_APPID_HERE",
-//  "gcm_projectid": "ENTER_GOOGLE_PROJECTID_HERE",
-//	success:function(e)
-//	{
-//		Ti.API.info('JS registration success event: ' + e.registrationId);
-//	},
-//	error:function(e)
-//	{
-//		Ti.API.error("Error during registration: "+e.error);
-//	},
-//	callback:function(e) // called when a push notification is received
-//	{
-//		Ti.API.info('JS message event: ' + JSON.stringify(e.data));
-//	}
-//});
-//(end)
+
+	@Kroll.method
+	public void initialize(HashMap options)
+	{
+		Log.d(LCAT, "initialize called");
+
+		// On Andoid < 4.0 registration is handled by IntentReceiver class
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			registerReceivers();
+		}
+
+		String pushwooshAppId = (String)options.get("application");
+		String googleProjectId = (String)options.get("gcm_project");
+		
+		checkMessage(TiApplication.getInstance().getRootActivity().getIntent());
+		resetIntentValues(TiApplication.getInstance().getRootActivity());
+
+		PushManager.initializePushManager(TiApplication.getInstance(), pushwooshAppId, googleProjectId);
+		mPushManager = PushManager.getInstance(TiApplication.getInstance());
+		mPushManager.setNotificationFactory(new NotificationFactory());
+		try
+		{
+			mPushManager.onStartup(TiApplication.getInstance());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
+	}
+
+	@Kroll.method
+	public void registerForPushNotifications(KrollFunction success, KrollFunction error)
+	{
+		successCallback = success;
+		errorCallback = error;
+
+		mPushManager.registerForPushNotifications();
+	}
+
+	@Kroll.method
+	public void onPushOpened(KrollFunction callback)
+	{
+		pushOpenCallback = callback;
+	}
+
+	@Kroll.method
+	public void onPushReceived(KrollFunction callback)
+	{
+		pushReceiveCallback = callback;
+	}
+
 	@Kroll.method
 	public void pushNotificationsRegister(HashMap options)
 	{
-		Log.d(LCAT, "Push: registering for pushes");
+		Log.w(LCAT, "<pushNotificationsRegister> method is deprecated! Use <initialize> and <register> instead");
 
 		// On Andoid < 4.0 registration is handled by IntentReceiver class
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -276,17 +287,17 @@ public class PushnotificationsModule extends KrollModule
 
 		return;
 	}
-	
-//Function: unregister
-//Unregisters device from push notifications
+
 	@Kroll.method
 	public void unregister() {
 		Log.d(LCAT, "unregister called");
+		if (mPushManager == null)
+		{
+			return;
+		}
 		mPushManager.unregisterForPushNotifications();	
 	}
 	
-//Function: startTrackingGeoPushes
-//Starts geolocation based push notifications. You need to configure Geozones in Pushwoosh Control panel.
 	@Kroll.method
 	public void startTrackingGeoPushes() {
 		Log.d(LCAT, "start tracking geo pushes called");
@@ -297,8 +308,6 @@ public class PushnotificationsModule extends KrollModule
 		mPushManager.startTrackingGeoPushes();
 	}
  
-//Function: stopTrackingGeoPushes
-//Stops geolocation based push notifications
 	@Kroll.method
 	public void stopTrackingGeoPushes() {
 		Log.d(LCAT, "stop tracking geo pushes called");
@@ -309,17 +318,6 @@ public class PushnotificationsModule extends KrollModule
 		mPushManager.stopTrackingGeoPushes();
 	}
 
-//Function: setTags
-//Call this to set tags for the device
-//
-//Example:
-//sets the following tags: "deviceName" with value "hello" and "deviceId" with value 10
-//(start code)
-//	pushnotifications.setTags({deviceName:"hello", deviceId:10});
-//
-//	//setings list tags "MyTag" with values (array) "hello", "world"
-//	pushnotifications.setTags({"MyTag":["hello", "world"]});
-//(end)	
 	@Kroll.method
 	public void setTags(HashMap params)
 	{
@@ -340,74 +338,78 @@ public class PushnotificationsModule extends KrollModule
 		}
 	}
 
-//Function: scheduleLocalNotification
-//Android only, Creates local notification.
-//
-//Example:
-//(start code)
-//pushnotification.scheduleLocalNotification("Your pumpkins are ready!", 30);
-//(end)
 	@Kroll.method
 	public int scheduleLocalNotification(String message, int seconds)
 	{
 		return PushManager.scheduleLocalNotification(TiApplication.getInstance(), message, seconds);
 	}
 
-//Function: clearLocalNotification
-//Android only, Clears pending local notification created by <scheduleLocalNotification>
 	@Kroll.method
 	public void clearLocalNotification(int id)
 	{
 		PushManager.clearLocalNotification(TiApplication.getInstance(), id);
 	}
 	
-//Function: clearLocalNotifications
-//Android only, Clears all pending local notifications created by <scheduleLocalNotification>
 	@Kroll.method
 	public void clearLocalNotifications()
 	{
 		PushManager.clearLocalNotifications(TiApplication.getInstance());
 	}
 
-//Function: setMultiNotificationMode
-//Android only, Allows multiple notifications in notification bar.
 	@Kroll.method
 	public void setMultiNotificationMode()
 	{
 		PushManager.setMultiNotificationMode(TiApplication.getInstance());
 	}
 
-//Function: setSimpleNotificationMode
-//Android only, Allows only the last notification in notification bar.
 	@Kroll.method
 	public void setSimpleNotificationMode()
 	{
 		PushManager.setSimpleNotificationMode(TiApplication.getInstance());
 	}
 
-
-//Function: setBadgeNumber
-//Android only, Set application icon badge number
 	@Kroll.method
 	public void setBadgeNumber(int badgeNumber)
 	{
 		mPushManager.setBadgeNumber(badgeNumber);
 	}
 
-//Function: getBadgeNumber
-//Android only, Get application icon badge number
 	@Kroll.method
 	public int getBadgeNumber()
 	{
 		return mPushManager.getBadgeNumber();
 	}
 
-//Function: addBadgeNumber
-//Android only, Add to application icon badge number
 	@Kroll.method
 	public void addBadgeNumber(int deltaBadge)
 	{
 		mPushManager.addBadgeNumber(deltaBadge);
+	}
+
+	@Kroll.method
+	public void setUserId(String userId)
+	{
+		mPushManager.setUserId(TiApplication.getInstance(), userId);
+	}
+
+	@Kroll.method
+	public void postEvent(String event, HashMap attributes)
+	{
+		InAppFacade.postEvent(TiApplication.getInstance().getRootActivity(), event, (Map<String, Object>)attributes);
+	}
+
+	@Kroll.method
+	public String getHwid()
+	{
+		return PushManager.getPushwooshHWID(TiApplication.getInstance());
+	}
+
+//Function: getPushToken
+// Returns push notification token or null if device is not registered yet
+	@Kroll.method
+	public String getPushToken()
+	{
+		return PushManager.getPushToken(TiApplication.getInstance());
 	}
 
 	public void checkMessage(Intent intent)
@@ -476,8 +478,6 @@ public class PushnotificationsModule extends KrollModule
 	}
 
 	public void sendMessage(final String messageData) {
-		if(messageCallback == null)
-			return;
 
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
 			@Override
@@ -485,9 +485,48 @@ public class PushnotificationsModule extends KrollModule
 				HashMap data = new HashMap();
 				data.put("data", messageData);
 
-				messageCallback.call(getKrollObject(),data);
+				if (messageCallback != null)
+					messageCallback.call(getKrollObject(), data);
+
+				if (pushOpenCallback != null)
+					pushOpenCallback.call(getKrollObject(), convertMessageData(messageData));
 			}
 		});
+	}
+
+	public void sendPushReceived(final String messageData) {
+		if (pushReceiveCallback == null)
+			return;
+
+		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				pushReceiveCallback.call(getKrollObject(), convertMessageData(messageData));
+			}
+		});
+	}
+
+	private HashMap<String, Object> convertMessageData(String messageData)
+	{
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		try
+		{
+			JSONObject json = new JSONObject(messageData);
+			Boolean foreground = json.optBoolean("foreground");
+			String message = json.optString("title");
+			JSONObject userData = json.optJSONObject("userdata");
+
+			result.put("data", JsonUtils.jsonToMap(json));
+			result.put("foreground", foreground);
+			result.put("message", message);
+			result.put("extras", JsonUtils.jsonToMap(userData));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 	
 	public void resetIntentValues(Activity activity)

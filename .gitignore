@@ -3,3 +3,9 @@ Module-Source/android/libs/armeabi/libcom.pushwoosh.module.so
 Module-Source/android/libs/armeabi-v7a/libcom.pushwoosh.module.so
 Module-Source/android/libs/x86/libcom.pushwoosh.module.so
 Titanium-Sample-iOS-Android/build
+Titanium-Sample-iOS-Android/i18n
+Titanium-Sample-iOS-Android/platform
+Titanium-Sample-iOS-Android/Resources
+Module-Source/ios/PushwooshModule.xcodeproj/xcuserdata
+Module-Source/ios/PushwooshModule.xcodeproj/project.xcworkspace/xcuserdata
+Module-Source/ios/PushwooshModule.xcodeproj/project.xcworkspace/xcshareddata
