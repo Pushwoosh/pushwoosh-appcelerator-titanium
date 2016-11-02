@@ -38,6 +38,10 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 @Kroll.module(name="Pushwoosh", id="com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule
 {
@@ -411,6 +415,51 @@ public class PushnotificationsModule extends KrollModule
 	{
 		return PushManager.getPushToken(TiApplication.getInstance());
 	}
+
+
+
+	@Kroll.method
+	public boolean hasNotificationsEnabled()
+	{
+		String CHECK_OP_NO_THROW = "checkOpNoThrow";
+		String appOpsServiceId = "OP_POST_NOTIFICATION";
+
+		Context context = TiApplication.getInstance();
+
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+	        try {
+			        String pkg = context.getPackageName();
+					ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(pkg, PackageManager.GET_META_DATA);
+			        int uid = appInfo.uid;
+			        Class appOpsClass = null;
+			        Object appOps = context.getSystemService("appops");
+
+		            appOpsClass = Class.forName("android.app.AppOpsManager");
+
+		            Method checkOpNoThrowMethod = appOpsClass.getMethod(
+		                CHECK_OP_NO_THROW,
+		                Integer.TYPE,
+		                Integer.TYPE,
+		                String.class
+		            );
+
+		            Field opValue = appOpsClass.getDeclaredField(appOpsServiceId);
+
+		            int value = (int) opValue.getInt(Integer.class);
+		            Object result = checkOpNoThrowMethod.invoke(appOps, value, uid, pkg);
+
+		            return Integer.parseInt(result.toString()) == 0; // AppOpsManager.MODE_ALLOWED
+				} catch (Exception e) {
+		            e.printStackTrace();
+					return true; // Default to assuming notifications are enabled
+		        }
+		}
+
+	    return true; // Default to assuming notifications are enabled
+	}
+
+
 
 	public void checkMessage(Intent intent)
 	{
