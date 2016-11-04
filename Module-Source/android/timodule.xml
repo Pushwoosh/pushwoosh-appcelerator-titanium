@@ -72,19 +72,19 @@
 						<category android:name="${tiapp.properties['id']}" />
 					</intent-filter>
 				</receiver>
-				
+
 				<service android:name="com.pushwoosh.GCMListenerService" android:exported="false">
 					<intent-filter>
 						<action android:name="com.google.android.c2dm.intent.RECEIVE" />
 					</intent-filter>
 				</service>
-				
+
 				<service android:name="com.pushwoosh.GCMInstanceIDListenerService" android:exported="false">
 					<intent-filter>
 						<action android:name="com.google.android.gms.iid.InstanceID" />
 					</intent-filter>
 				</service>
-				
+
 				<service
 					android:name="com.pushwoosh.GCMRegistrationService"
 					android:exported="false">
@@ -94,7 +94,7 @@
 				  Service for sending location updates
 				-->
 				<service android:name="com.pushwoosh.location.GeoLocationService" />
-				
+
 				<activity android:name="com.pushwoosh.richpages.RichPageActivity"/>
 
 				<!-- Receivers for local notifications-->
