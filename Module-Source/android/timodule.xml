@@ -53,13 +53,13 @@
 				<uses-permission android:name="com.oppo.launcher.permission.READ_SETTINGS"/>
 				<uses-permission android:name="com.oppo.launcher.permission.WRITE_SETTINGS"/>
 			<!-- </badges> -->
-			
+
 			<permission android:name="${tiapp.properties['id']}.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
-			
+
 			<application>
-				<meta-data android:name="com.google.android.gms.version" android:value="8487000" />
+				<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 				<meta-data android:name="PW_NOTIFICATION_RECEIVER" android:value="com.pushwoosh.module.IntentReceiver" />
-			 
+
 				<receiver android:name="com.pushwoosh.module.IntentReceiver">
 				<intent-filter>
 						<action android:name="${tiapp.properties['id']}.com.pushwoosh.REGISTER_BROAD_CAST_ACTION"/>
