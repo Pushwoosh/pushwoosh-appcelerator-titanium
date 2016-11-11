@@ -270,6 +270,18 @@ static __strong NSDictionary * gStartPushData = nil;
 	return [[PushNotificationManager pushManager] getPushToken];
 }
 
+- (id)getNotificationSettings:(id)unused
+{
+	NSDictionary *settings = [PushNotificationManager getRemoteNotificationStatus];
+	NSDictionary *result = @{
+		 @"enabled" : @((BOOL)![settings[@"enabled"] isEqualToString:@"0"]),
+		 @"pushAlert" : @((BOOL)![settings[@"pushAlert"] isEqualToString:@"0"]),
+		 @"pushBadge" : @((BOOL)![settings[@"pushBadge"] isEqualToString:@"0"]),
+		 @"pushSound" : @((BOOL)![settings[@"pushSound"] isEqualToString:@"0"])
+	};
+	return result;
+}
+
 #pragma Internal
 
 // For one argument Appcelerator may wrap it in NSArray or may not in a random way

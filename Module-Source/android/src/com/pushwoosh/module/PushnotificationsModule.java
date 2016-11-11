@@ -412,6 +412,23 @@ public class PushnotificationsModule extends KrollModule
 		return PushManager.getPushToken(TiApplication.getInstance());
 	}
 
+	@Kroll.method
+	public Map getNotificationSettings() 
+	{
+		Map result = new HashMap<String, Object>();
+		boolean enabled = false;
+		try 
+		{
+			enabled = PushManager.isNotificationEnabled(TiApplication.getInstance().getRootActivity());
+		}
+		catch (Exception e)
+		{
+		}
+
+		result.put("enabled", enabled);
+		return result;
+	}
+
 	public void checkMessage(Intent intent)
 	{
 		if(intent == null)

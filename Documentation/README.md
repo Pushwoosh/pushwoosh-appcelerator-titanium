@@ -54,6 +54,7 @@ pushwoosh.registerForPushNotifications(
 [clearLocalNotifications()](#clearlocalnotifications)  
 [setMultiNotificationMode()](#setmultinotificationmode)  
 [setSimpleNotificationMode()](#setsimplenotificationmode)  
+[getNotificationSettings](#getnotificationsettings)  
 ---
 
 ### initialize
@@ -292,3 +293,19 @@ Android only, Allows only the last notification in notification bar.
 ```js
 pushwoosh.setSimpleNotificationMode();
 ```
+
+---
+
+### getNotificationSettings
+
+Returns application notification settings as object with properties:
+
+`enabled` - are notifications enabled<br>
+`pushAlert` - is notification sound enabled (iOS only)<br>
+`pushBadge` - is notification badge enabled (iOS only)<br>
+`pushSound` - is notification sound enabled (iOS only)<br>
+
+```js
+var settings = pushwoosh.getNotificationSettings();
+```
+
