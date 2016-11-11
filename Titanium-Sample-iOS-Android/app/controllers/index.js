@@ -34,6 +34,8 @@ pushwoosh.registerForPushNotifications(
 
 Ti.API.info('Pushwoosh hwid: ' + pushwoosh.getHwid());
 
+Ti.API.info("Notification settings: " + JSON.stringify(pushwoosh.getNotificationSettings()));
+
 // Application icon badges
 //pushwoosh.setBadgeNumber(5);
 //pushwoosh.addBadgeNumber(3);
