@@ -38,6 +38,10 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 @Kroll.module(name="Pushwoosh", id="com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule
 {
@@ -45,26 +49,26 @@ public class PushnotificationsModule extends KrollModule
 	// Standard Debugging variables
 	private static final String LCAT = "PushnotificationsModule";
 	private static final boolean DBG = TiConfig.LOGD;
-	
+
 	boolean broadcastPush = true;
 
 	// You can define constants with @Kroll.constant, for example:
 	// @Kroll.constant public static final String EXTERNAL_NAME = value;
 
 	public static PushnotificationsModule INSTANCE = null;
-	
+
 	protected void finalize()
 	{
 		INSTANCE = null;
 		Log.d(LCAT, "Push: finalized");
 	}
-	
+
 	public PushnotificationsModule()
 	{
 		super();
 		INSTANCE = this;
 		Log.d(LCAT, "Push: create module");
-		
+
 		// lifecycle callbacks are available since android 14 API
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			TiApplication.getInstance().registerActivityLifecycleCallbacks(new ActivityMonitor());
@@ -81,14 +85,14 @@ public class PushnotificationsModule extends KrollModule
 			// ignore
 		}
 	}
-	
+
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app)
 	{
 		Log.d(LCAT, "inside onAppCreate");
 		// put module init code that needs to run when the application is created
 	}
-	
+
 	@Override
 	protected void initActivity(Activity activity) {
 		Log.d(LCAT, "Push: init activity!");
@@ -101,22 +105,22 @@ public class PushnotificationsModule extends KrollModule
 
 		Log.d(LCAT, "Push: on destroy");
 	}
-	
+
 	@Override
 	public void onPause(Activity activity) {
 		super.onPause(activity);
-		
+
 		Log.d(LCAT, "Push: on pause");
 		return;
 	}
- 
+
 	@Override
 	public void onResume(Activity activity) {
 		super.onResume(activity);
-		
+
 		Log.d(LCAT, "Push: on resume");
 	}
-	
+
 	//Registration receiver
 	BaseRegistrationReceiver mBroadcastReceiver = new BaseRegistrationReceiver()
 	{
@@ -128,7 +132,7 @@ public class PushnotificationsModule extends KrollModule
 			checkMessage(intent);
 		}
 	};
-	
+
 	//Push message receiver
 	private BasePushMessageReceiver mReceiver = new BasePushMessageReceiver()
 	{
@@ -141,26 +145,26 @@ public class PushnotificationsModule extends KrollModule
 			sendMessage(intent.getExtras().getString(JSON_DATA_KEY));
 		}
 	};
-	
+
 	//Registration of the receivers
 	public void registerReceivers()
 	{
-		//sometimes titanium alloy doesn't call onPause or onResume 
+		//sometimes titanium alloy doesn't call onPause or onResume
 		unregisterReceivers();
-		
+
 		Log.d(LCAT, "Push: register receivers");
 
 		IntentFilter intentFilter = new IntentFilter(TiApplication.getInstance().getRootActivity().getPackageName() + ".action.PUSH_MESSAGE_RECEIVE");
 
 		if(broadcastPush)
 			TiApplication.getInstance().getRootActivity().registerReceiver(mReceiver, intentFilter);
-		
+
 		TiApplication.getInstance().getRootActivity().registerReceiver(mBroadcastReceiver, new IntentFilter(TiApplication.getInstance().getRootActivity().getPackageName() + "." + PushManager.REGISTER_BROAD_CAST_ACTION));
-		
+
 		Log.d(LCAT, "Push: finished registering receivers");
 
 	}
-	
+
 	public void unregisterReceivers()
 	{
 		Log.d(LCAT, "Push: unregistering receivers");
@@ -174,7 +178,7 @@ public class PushnotificationsModule extends KrollModule
 		{
 			// pass.
 		}
-		
+
 		try
 		{
 			TiApplication.getInstance().getRootActivity().unregisterReceiver(mBroadcastReceiver);
@@ -183,19 +187,19 @@ public class PushnotificationsModule extends KrollModule
 		{
 			//pass through
 		}
-		
+
 		Log.d(LCAT, "Push: finished unregistering receivers");
 
 	}
-	
+
 	private KrollFunction successCallback = null;
 	private KrollFunction errorCallback = null;
 	private KrollFunction messageCallback = null;
 	private KrollFunction pushOpenCallback = null;
 	private KrollFunction pushReceiveCallback = null;
-	
+
 	PushManager mPushManager = null;
-	
+
 
 	@Kroll.method
 	public void initialize(HashMap options)
@@ -209,7 +213,7 @@ public class PushnotificationsModule extends KrollModule
 
 		String pushwooshAppId = (String)options.get("application");
 		String googleProjectId = (String)options.get("gcm_project");
-		
+
 		checkMessage(TiApplication.getInstance().getRootActivity().getIntent());
 		resetIntentValues(TiApplication.getInstance().getRootActivity());
 
@@ -282,7 +286,7 @@ public class PushnotificationsModule extends KrollModule
 			sendError("Failed to register for push notifications");
 			return;
 		}
-		
+
 		Log.d(LCAT, "Push: finished registering for pushes");
 
 		return;
@@ -295,9 +299,9 @@ public class PushnotificationsModule extends KrollModule
 		{
 			return;
 		}
-		mPushManager.unregisterForPushNotifications();	
+		mPushManager.unregisterForPushNotifications();
 	}
-	
+
 	@Kroll.method
 	public void startTrackingGeoPushes() {
 		Log.d(LCAT, "start tracking geo pushes called");
@@ -307,7 +311,7 @@ public class PushnotificationsModule extends KrollModule
 		}
 		mPushManager.startTrackingGeoPushes();
 	}
- 
+
 	@Kroll.method
 	public void stopTrackingGeoPushes() {
 		Log.d(LCAT, "stop tracking geo pushes called");
@@ -349,7 +353,7 @@ public class PushnotificationsModule extends KrollModule
 	{
 		PushManager.clearLocalNotification(TiApplication.getInstance(), id);
 	}
-	
+
 	@Kroll.method
 	public void clearLocalNotifications()
 	{
@@ -412,6 +416,51 @@ public class PushnotificationsModule extends KrollModule
 		return PushManager.getPushToken(TiApplication.getInstance());
 	}
 
+
+
+	@Kroll.method
+	public boolean hasNotificationsEnabled()
+	{
+		String CHECK_OP_NO_THROW = "checkOpNoThrow";
+		String appOpsServiceId = "OP_POST_NOTIFICATION";
+
+		Context context = TiApplication.getInstance();
+
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+	        try {
+			        String pkg = context.getPackageName();
+					ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(pkg, PackageManager.GET_META_DATA);
+			        int uid = appInfo.uid;
+			        Class appOpsClass = null;
+			        Object appOps = context.getSystemService("appops");
+
+		            appOpsClass = Class.forName("android.app.AppOpsManager");
+
+		            Method checkOpNoThrowMethod = appOpsClass.getMethod(
+		                CHECK_OP_NO_THROW,
+		                Integer.TYPE,
+		                Integer.TYPE,
+		                String.class
+		            );
+
+		            Field opValue = appOpsClass.getDeclaredField(appOpsServiceId);
+
+		            int value = (int) opValue.getInt(Integer.class);
+		            Object result = checkOpNoThrowMethod.invoke(appOps, value, uid, pkg);
+
+		            return Integer.parseInt(result.toString()) == 0; // AppOpsManager.MODE_ALLOWED
+				} catch (Exception e) {
+		            e.printStackTrace();
+					return true; // Default to assuming notifications are enabled
+		        }
+		}
+
+	    return true; // Default to assuming notifications are enabled
+	}
+
+
+
 	public void checkMessage(Intent intent)
 	{
 		if(intent == null)
@@ -446,11 +495,11 @@ public class PushnotificationsModule extends KrollModule
 			}
 		}
 	}
-	
+
 	public void sendSuccess(final String registrationId) {
 		if(successCallback == null)
 			return;
-		
+
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -465,7 +514,7 @@ public class PushnotificationsModule extends KrollModule
 	public void sendError(final String error) {
 		if(errorCallback == null)
 			return;
-		
+
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -528,12 +577,12 @@ public class PushnotificationsModule extends KrollModule
 
 		return result;
 	}
-	
+
 	public void resetIntentValues(Activity activity)
 	{
 		if(activity == null)
 			return;
-			
+
 		Intent mainAppIntent = activity.getIntent();
 
 		if (mainAppIntent.hasExtra(PushManager.PUSH_RECEIVE_EVENT))
