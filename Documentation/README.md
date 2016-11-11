@@ -9,7 +9,7 @@ Example:
 var pushwoosh = require('com.pushwoosh.module');
 
 pushwoosh.onPushOpened(function(e) {
-  Ti.API.info('Push notification opened: ' + JSON.stringify(e));
+	Ti.API.info('Push notification opened: ' + JSON.stringify(e));
 });
 
 pushwoosh.initialize({ 
@@ -19,7 +19,7 @@ pushwoosh.initialize({
 
 pushwoosh.registerForPushNotifications(
 	function(e) {
-  		setTimeout(function() {
+		setTimeout(function() {
 			Ti.API.info('Registered with push token: ' + e.registrationId);
 		}, 0);
 	},
