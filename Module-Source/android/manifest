@@ -3,7 +3,7 @@
 # during compilation, packaging, distribution, etc.
 #
 version: 2.2.2
-apiversion: 2
+apiversion: 3
 architectures: armeabi armeabi-v7a x86
 description: Pushwoosh Module
 author: Pushwoosh
@@ -16,4 +16,4 @@ name: pushnotifications
 moduleid: com.pushwoosh.module
 guid: 25080c7a-19fd-4809-90db-8a4117e44b84
 platform: android
-minsdk: 3.0.0.GA
+minsdk: 6.0.0.GA
