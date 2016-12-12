@@ -1,0 +1,19 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 3.0.0
+apiversion: 3
+architectures: armeabi armeabi-v7a x86
+description: Pushwoosh Module
+author: Pushwoosh
+license: MIT
+copyright: Copyright (c) 2012 by Pushwoosh
+
+
+# these should not be edited
+name: pushnotifications
+moduleid: com.pushwoosh.module
+guid: 25080c7a-19fd-4809-90db-8a4117e44b84
+platform: android
+minsdk: 6.0.0.GA
