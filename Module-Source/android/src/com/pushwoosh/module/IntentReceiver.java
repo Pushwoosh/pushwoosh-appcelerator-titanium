@@ -59,7 +59,7 @@ public class IntentReceiver extends BroadcastReceiver
 			{
 				Log.d("IntentReceiver", "Registering: INSTANCE NOT NULL");
 
-					PushnotificationsModule.INSTANCE.checkMessage(intent);
+					PushnotificationsModule.INSTANCE.checkMessage(intent, false);
 			}
 			else
 			{
@@ -95,22 +95,12 @@ public class IntentReceiver extends BroadcastReceiver
 		launchIntent.putExtras(pushBundle);
 		launchIntent.putExtra(PushManager.PUSH_RECEIVE_EVENT, dataObject.toString());
 
-		// on API 14 and higher messages are handled by PushnotificationModule receivers using lifecycle callbacks
-		if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-		{
-			if(PushnotificationsModule.INSTANCE != null)
-			{
-				Log.d("IntentReceiver", "Push action: INSTANCE NOT NULL");
-
-				PushnotificationsModule.INSTANCE.checkMessage(launchIntent);
-			}
-			else
-			{
-				Log.d("IntentReceiver", "Push action: INSTANCE IS NULL");
-			}
-		}
-
 		context.startActivity(launchIntent);
+
+		if (PushnotificationsModule.INSTANCE != null)
+		{
+			PushnotificationsModule.INSTANCE.sendMessage(dataObject.toString());
+		}
 		
 		PushManagerImpl.postHandlePush(context, intent);
 	}

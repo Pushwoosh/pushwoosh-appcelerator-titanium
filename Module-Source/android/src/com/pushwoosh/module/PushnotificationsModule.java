@@ -125,7 +125,7 @@ public class PushnotificationsModule extends KrollModule
 		{
 			Log.d(LCAT, "Push: register broadcast received");
 
-			checkMessage(intent);
+			checkMessage(intent, false);
 		}
 	};
 	
@@ -210,7 +210,7 @@ public class PushnotificationsModule extends KrollModule
 		String pushwooshAppId = (String)options.get("application");
 		String googleProjectId = (String)options.get("gcm_project");
 		
-		checkMessage(TiApplication.getInstance().getRootActivity().getIntent());
+		checkMessage(TiApplication.getInstance().getRootActivity().getIntent(), true);
 		resetIntentValues(TiApplication.getInstance().getRootActivity());
 
 		PushManager.initializePushManager(TiApplication.getInstance(), pushwooshAppId, googleProjectId);
@@ -265,7 +265,7 @@ public class PushnotificationsModule extends KrollModule
 		errorCallback = (KrollFunction)options.get("error");
 		messageCallback = (KrollFunction)options.get("callback");
 
-		checkMessage(TiApplication.getInstance().getRootActivity().getIntent());
+		checkMessage(TiApplication.getInstance().getRootActivity().getIntent(), true);
 		resetIntentValues(TiApplication.getInstance().getRootActivity());
 
 		PushManager.initializePushManager(TiApplication.getInstance(), pushwooshAppId, googleProjectId);
@@ -429,7 +429,7 @@ public class PushnotificationsModule extends KrollModule
 		return result;
 	}
 
-	public void checkMessage(Intent intent)
+	public void checkMessage(Intent intent, boolean onStart)
 	{
 		if(intent == null)
 		{
@@ -438,7 +438,9 @@ public class PushnotificationsModule extends KrollModule
 		}
 		if (null != intent)
 		{
-			if (intent.hasExtra(PushManager.PUSH_RECEIVE_EVENT))
+			// check for incoming notifications only on start
+			// background and foreground notifications are handled by BasePushMessageReceiver and IntentReceiver
+			if (intent.hasExtra(PushManager.PUSH_RECEIVE_EVENT) && onStart) 
 			{
 				Log.d(LCAT, "CHECK MESSAGE: push receive");
 				sendMessage(intent.getExtras().getString(PushManager.PUSH_RECEIVE_EVENT));

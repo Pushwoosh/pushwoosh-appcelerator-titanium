@@ -29,7 +29,7 @@ class ActivityMonitor implements ActivityLifecycleCallbacks {
 	public void onActivityResumed(Activity activity) {
 		Log.d(LCAT, String.format("Push: ACTIVITY RESUMED: %d", ++activeCount));
 		
-		PushnotificationsModule.INSTANCE.checkMessage(activity.getIntent());
+		PushnotificationsModule.INSTANCE.checkMessage(activity.getIntent(), false);
 		PushnotificationsModule.INSTANCE.resetIntentValues(activity);
 		
 		if(activeCount != 0)
