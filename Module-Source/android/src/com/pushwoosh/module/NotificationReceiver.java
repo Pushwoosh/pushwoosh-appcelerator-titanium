@@ -39,8 +39,7 @@ import org.json.JSONObject;
 import java.util.Set;
 
 
-
-public class IntentReceiver extends BroadcastReceiver
+public class NotificationReceiver extends BroadcastReceiver
 {
 	public void onReceive(Context context, Intent intent)
 	{
@@ -48,45 +47,25 @@ public class IntentReceiver extends BroadcastReceiver
 			return;
 		}
 
-		Log.d("IntentReceiver", "RECEIVE: " + intent.getAction());
-		if(intent.getAction() != null && intent.getAction().equalsIgnoreCase(context.getPackageName() + "." + PushManager.REGISTER_BROAD_CAST_ACTION))
-		{
-			// on API 14 and higher registation is handled by PushnotificationModule receivers using lifecycle callbacks
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-				return;
-				
-			if(PushnotificationsModule.INSTANCE != null)
-			{
-				Log.d("IntentReceiver", "Registering: INSTANCE NOT NULL");
-
-					PushnotificationsModule.INSTANCE.checkMessage(intent, false);
-			}
-			else
-			{
-				Log.d("IntentReceiver", "Registering: INSTANCE IS NULL");
-			}
-
-			return;
-		}
+		Log.d("NotificationReceiver", "RECEIVE: " + intent.getAction());
 
 		Bundle pushBundle = PushManagerImpl.preHandlePush(context, intent);
-		if(pushBundle == null)
+		if(pushBundle == null) {
 			return;
+		}
 			
 		JSONObject dataObject = PushManagerImpl.bundleToJSON(pushBundle);
 		
 		TiApplication appContext = TiApplication.getInstance();
 		Activity activity = appContext.getCurrentActivity();
-		if (activity == null)
+		if (activity == null) {
 			activity = appContext.getRootActivity();
+		}
 
 		Intent launchIntent = null;
-		if(activity != null)
-		{
+		if(activity != null) {
 			launchIntent = activity.getIntent();
-		}
-		else
-		{
+		} else {
 			launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
 			launchIntent.addCategory("android.intent.category.LAUNCHER");
 		}
@@ -97,9 +76,10 @@ public class IntentReceiver extends BroadcastReceiver
 
 		context.startActivity(launchIntent);
 
-		if (PushnotificationsModule.INSTANCE != null)
-		{
-			PushnotificationsModule.INSTANCE.sendMessage(dataObject.toString());
+		if (PushnotificationsModule.INSTANCE != null) {
+			PushnotificationsModule.INSTANCE.onNotificationOpened(dataObject.toString());
+		} else {
+			PushnotificationsModule.saveStartPush(dataObject.toString());
 		}
 		
 		PushManagerImpl.postHandlePush(context, intent);

@@ -58,10 +58,12 @@
 			
 			<application>
 				<meta-data android:name="com.google.android.gms.version" android:value="8487000" />
-				<meta-data android:name="PW_NOTIFICATION_RECEIVER" android:value="com.pushwoosh.module.IntentReceiver" />
+				<meta-data android:name="PW_NOTIFICATION_RECEIVER" android:value="com.pushwoosh.module.NotificationReceiver" />
 			 
-				<receiver android:name="com.pushwoosh.module.IntentReceiver">
-				<intent-filter>
+				<receiver android:name="com.pushwoosh.module.NotificationReceiver" />
+
+				<receiver android:name="com.pushwoosh.module.RegistrationReceiver">
+					<intent-filter>
 						<action android:name="${tiapp.properties['id']}.com.pushwoosh.REGISTER_BROAD_CAST_ACTION"/>
 					</intent-filter>
 				</receiver>
