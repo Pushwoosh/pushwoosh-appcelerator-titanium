@@ -197,6 +197,26 @@ static __strong NSDictionary * gStartPushData = nil;
 	[[PushNotificationManager pushManager] setTags:args[0]];
 }
 
+- (void)getTags:(id)args
+{
+	ENSURE_TYPE(args[0], KrollCallback);
+	KrollCallback *successCallback = args[0];
+	KrollCallback *errorCallback = nil;
+	
+	if ([args count] > 1) {
+		ENSURE_TYPE(args[1], KrollCallback);
+		errorCallback = args[1];
+	}
+	
+	[[PushNotificationManager pushManager] loadTags:^(NSDictionary* tags) {
+		[successCallback call:@[tags] thisObject:nil];
+	} error:^(NSError *error) {
+		if (errorCallback) {
+			[errorCallback call:@[@{ @"error" : error.localizedDescription }] thisObject:nil];
+		}
+	}];
+}
+
 - (void)getLaunchNotification:(id)args
 {
 	args = [self wrapArguments:args];

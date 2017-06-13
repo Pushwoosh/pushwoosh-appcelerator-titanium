@@ -211,6 +211,29 @@ public class PushnotificationsModule extends KrollModule
 	}
 
 	@Kroll.method
+	public void getTags(final KrollFunction success, final KrollFunction error)
+	{
+		if (pushManager == null) {
+			return;
+		}
+
+		PushManager.getTagsAsync(TiApplication.getInstance(), new PushManager.GetTagsListener() {
+			@Override
+			public void onTagsReceived(Map<String, Object> tags) {
+				HashMap result = new HashMap(tags);
+				success.callAsync(getKrollObject(), result);
+			}
+
+			@Override
+			public void onError(Exception e) {
+				HashMap result = new HashMap();
+				result.put("error", e.getMessage());
+				error.callAsync(getKrollObject(), result);
+			}
+		});
+	}
+
+	@Kroll.method
 	public int scheduleLocalNotification(String message, int seconds)
 	{
 		return PushManager.scheduleLocalNotification(TiApplication.getInstance(), message, seconds);
