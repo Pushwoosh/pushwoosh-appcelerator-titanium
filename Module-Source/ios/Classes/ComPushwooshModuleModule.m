@@ -10,6 +10,8 @@
 #import "TiHost.h"
 #import "TiUtils.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 static __strong NSDictionary * gStartPushData = nil;
 
 @implementation ComPushwooshModuleModule
@@ -57,7 +59,8 @@ static __strong NSDictionary * gStartPushData = nil;
 
 	[PushNotificationManager initializeWithAppCode:appCode appName:nil];
 	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
-	
+	[UNUserNotificationCenter currentNotificationCenter].delegate = [PushNotificationManager pushManager].notificationCenterDelegate;
+
 	if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_ALERT_TYPE"] &&
 		![[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_SHOW_ALERT"]) {
 		// do not show alert in foreground by default
