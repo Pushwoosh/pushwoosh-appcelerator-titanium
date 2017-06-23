@@ -423,7 +423,10 @@ public class PushnotificationsModule extends KrollModule
 			result.put("data", JsonUtils.jsonToMap(json));
 			result.put("foreground", foreground);
 			result.put("message", message);
-			result.put("extras", JsonUtils.jsonToMap(userData));
+
+			if (userData != null) {
+				result.put("extras", JsonUtils.jsonToMap(userData));
+			}
 		} catch(Exception e) {
 			Log.e(LCAT, "Failed to convert push message data", e);
 		}
