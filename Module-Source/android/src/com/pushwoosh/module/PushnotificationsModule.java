@@ -8,6 +8,7 @@ package com.pushwoosh.module;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollEventCallback;
@@ -49,6 +50,7 @@ public class PushnotificationsModule extends KrollModule
 	private static final boolean DBG = TiConfig.LOGD;
 	
 	private static AtomicReference<String> startPushData = new AtomicReference<String>(null);
+	private AtomicBoolean initialized = new AtomicBoolean(false);
 
 	private boolean broadcastPush = true;
 
@@ -94,6 +96,7 @@ public class PushnotificationsModule extends KrollModule
 	{
 		Log.d(LCAT, "initialize called");
 
+		initialized.set(true);
 
 		String pushwooshAppId = (String)options.get("application");
 		String googleProjectId = (String)options.get("gcm_project");
@@ -147,6 +150,8 @@ public class PushnotificationsModule extends KrollModule
 		registrationErrorCallback.set((KrollFunction)options.get("error"));
 		messageCallback = (KrollFunction)options.get("callback");
 
+		initialized.set(true);
+
 		// dispatch saved start notification
 		String startPush = startPushData.getAndSet(null);
 		if (startPush != null) {
@@ -164,7 +169,7 @@ public class PushnotificationsModule extends KrollModule
 			onRegistrationFailed("Failed to register for push notifications");
 			return;
 		}
-		
+
 		Log.d(LCAT, "Push: finished registering for pushes");
 
 		return;
@@ -321,13 +326,13 @@ public class PushnotificationsModule extends KrollModule
 
 	static void saveStartPush(String messageData)
 	{
+		Log.i(LCAT, "Start push saved: " + messageData);
 		startPushData.set(messageData);
 	}
 
 	void onNotificationOpened(final String messageData) 
 	{
-		if (!isTitaniumReady()) {
-			Log.w(LCAT, "titanium is not ready yet");
+		if (!initialized.get() || !isTitaniumReady()) {
 			saveStartPush(messageData);
 			return;
 		}

@@ -79,6 +79,7 @@ public class NotificationReceiver extends BroadcastReceiver
 		if (PushnotificationsModule.INSTANCE != null) {
 			PushnotificationsModule.INSTANCE.onNotificationOpened(dataObject.toString());
 		} else {
+			Log.d("NotificationReceiver", "PushnotificationsModule.INSTANCE is null");
 			PushnotificationsModule.saveStartPush(dataObject.toString());
 		}
 		
