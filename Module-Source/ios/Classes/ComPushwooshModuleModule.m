@@ -9,7 +9,7 @@
 #import "TiBase.h"
 #import "TiHost.h"
 #import "TiUtils.h"
-
+#import <Pushwoosh/Pushwoosh.h>
 #import <UserNotifications/UserNotifications.h>
 
 static __strong NSDictionary * gStartPushData = nil;
@@ -239,9 +239,9 @@ static __strong NSDictionary * gStartPushData = nil;
 	args = [self wrapArguments:args];
 	
 	ENSURE_ARG_COUNT(args, 1);
-	ENSURE_TYPE(args, NSString);
+    ENSURE_TYPE(args[0], NSString);
 
-	[[PushNotificationManager pushManager] setUserId:args];
+    [[PWInAppManager sharedManager] setUserId:args[0]];
 }
 
 - (void)postEvent:(id)args
