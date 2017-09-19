@@ -348,7 +348,7 @@ static __strong NSDictionary * gStartPushData = nil;
 	[self dispatchPushAccepted:pushNotification onStart:onStart];
 }
 
-- (NSDictionary *)pushInfoWithPushData:(NSDictionary *)pushData {
+- (NSDictionary *)pushInfoWithPushData:(NSDictionary *)pushData onStart:(BOOL)onStart {
     NSMutableDictionary *pushInfo = [NSMutableDictionary new];
     
     pushInfo[@"data"] = pushData;
@@ -381,7 +381,7 @@ static __strong NSDictionary * gStartPushData = nil;
 {
     NSLog(@"[INFO][PW-APPC] dispatch push accepted: %@", pushData);
     
-    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData];
+    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData onStart:onStart];
     
     [self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
     [self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
@@ -391,7 +391,7 @@ static __strong NSDictionary * gStartPushData = nil;
 {
     NSLog(@"[INFO][PW-APPC] dispatch push accepted: %@", pushData);
     
-    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData];
+    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData onStart:onStart];
     
     [self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
     [self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
@@ -399,11 +399,11 @@ static __strong NSDictionary * gStartPushData = nil;
 
 - (void)dispatchPush:(NSDictionary *)pushData onStart:(BOOL)onStart
 {
-	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
-	
-    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData];
-
-	[self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+    NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
+    
+    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData onStart:onStart];
+    
+    [self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
     [self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
     [self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
 }
