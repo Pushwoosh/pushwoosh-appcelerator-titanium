@@ -5,65 +5,61 @@
  */
 package com.pushwoosh.module;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.appcelerator.kroll.KrollDict;
-import org.appcelerator.kroll.KrollEventCallback;
-import org.appcelerator.kroll.KrollFunction;
-import org.appcelerator.kroll.KrollModule;
-import org.appcelerator.kroll.annotations.Kroll;
-
-import org.appcelerator.titanium.*;
-import org.appcelerator.titanium.TiC;
-import org.appcelerator.titanium.proxy.IntentProxy;
-import org.appcelerator.kroll.common.Log;
-import org.appcelerator.kroll.common.TiConfig;
-
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
-import com.pushwoosh.BasePushMessageReceiver;
-import com.pushwoosh.BaseRegistrationReceiver;
-import com.pushwoosh.PushManager;
-import com.pushwoosh.inapp.InAppFacade;
+import com.pushwoosh.Pushwoosh;
+import com.pushwoosh.badge.PushwooshBadge;
+import com.pushwoosh.exception.GetTagsException;
+import com.pushwoosh.exception.RegisterForPushNotificationsException;
+import com.pushwoosh.function.Callback;
+import com.pushwoosh.function.Result;
+import com.pushwoosh.inapp.PushwooshInApp;
 import com.pushwoosh.internal.utils.JsonUtils;
+import com.pushwoosh.location.PushwooshLocation;
+import com.pushwoosh.notification.LocalNotification;
+import com.pushwoosh.notification.LocalNotificationReceiver;
+import com.pushwoosh.notification.PushwooshNotificationSettings;
+import com.pushwoosh.tags.Tags;
+import com.pushwoosh.tags.TagsBundle;
 
+import org.appcelerator.kroll.KrollFunction;
+import org.appcelerator.kroll.KrollModule;
+import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.Log;
+import org.appcelerator.kroll.common.TiConfig;
+import org.appcelerator.titanium.*;
+import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.os.Bundle;
 
 @Kroll.module(name="Pushwoosh", id="com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule
 {
 	public static PushnotificationsModule INSTANCE = null;
 
-	// Standard Debugging variables
 	private static final String LCAT = "PushnotificationsModule";
 	private static final boolean DBG = TiConfig.LOGD;
-	
+
 	private static AtomicReference<String> startPushData = new AtomicReference<String>(null);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
 
 	private boolean broadcastPush = true;
 
-	// You can define constants with @Kroll.constant, for example:
-	// @Kroll.constant public static final String EXTERNAL_NAME = value;
-	
-	private AtomicReference<KrollFunction> registrationSuccessCallback = new AtomicReference<KrollFunction>(null);
-	private AtomicReference<KrollFunction> registrationErrorCallback = new AtomicReference<KrollFunction>(null);
+	private final AtomicReference<KrollFunction> registrationSuccessCallback = new AtomicReference<KrollFunction>(null);
+	private final AtomicReference<KrollFunction> registrationErrorCallback = new AtomicReference<KrollFunction>(null);
+
 	private KrollFunction messageCallback = null;
 	private KrollFunction pushOpenCallback = null;
 	private KrollFunction pushReceiveCallback = null;
-	
-	private PushManager pushManager = null;
 
 	// Mandatory method
 	@Kroll.onAppCreate
@@ -85,12 +81,12 @@ public class PushnotificationsModule extends KrollModule
 			if (ai != null && ai.metaData != null) {
 				broadcastPush = ai.metaData.getBoolean("PW_BROADCAST_PUSH", true);
 			}
-			
+
 		} catch(Exception e) {
 			Log.e(LCAT, "Failed to read AndroidManifest metaData", e);
 		}
 	}
-	
+
 	@Kroll.method
 	public void initialize(HashMap options)
 	{
@@ -100,21 +96,15 @@ public class PushnotificationsModule extends KrollModule
 
 		String pushwooshAppId = (String)options.get("application");
 		String googleProjectId = (String)options.get("gcm_project");
-		
+
 		// dispatch saved start notification
 		String startPush = startPushData.getAndSet(null);
 		if (startPush != null) {
 			onNotificationOpened(startPush);
 		}
 
-		PushManager.initializePushManager(TiApplication.getInstance(), pushwooshAppId, googleProjectId);
-		pushManager = PushManager.getInstance(TiApplication.getInstance());
-		pushManager.setNotificationFactory(new NotificationFactory());
-		try {
-			pushManager.onStartup(TiApplication.getInstance());
-		} catch (Exception e) {
-			Log.e(LCAT, "Failed to initialize PushManager", e);
-		}
+		Pushwoosh.getInstance().setAppId(pushwooshAppId);
+		Pushwoosh.getInstance().setSenderId(googleProjectId);
 	}
 
 	@Kroll.method
@@ -123,7 +113,16 @@ public class PushnotificationsModule extends KrollModule
 		registrationSuccessCallback.set(success);
 		registrationErrorCallback.set(error);
 
-		pushManager.registerForPushNotifications();
+		Pushwoosh.getInstance().registerForPushNotifications(new Callback<String, RegisterForPushNotificationsException>() {
+			@Override
+			public void process(Result<String, RegisterForPushNotificationsException> result) {
+				if (result.isSuccess()) {
+					onRegistrationSucceed(result.getData());
+				} else if (result.getException() != null) {
+					onRegistrationFailed(result.getException().getLocalizedMessage());
+				}
+			}
+		});
 	}
 
 	@Kroll.method
@@ -143,97 +142,62 @@ public class PushnotificationsModule extends KrollModule
 	{
 		Log.w(LCAT, "<pushNotificationsRegister> method is deprecated! Use <initialize> and <register> instead");
 
-		String googleProjectId = (String)options.get("gcm_projectid");
-		String pushwooshAppId = (String)options.get("pw_appid");
+		KrollFunction success = (KrollFunction) options.get("success");
+		KrollFunction error = (KrollFunction) options.get("error");
 
-		registrationSuccessCallback.set((KrollFunction)options.get("success"));
-		registrationErrorCallback.set((KrollFunction)options.get("error"));
 		messageCallback = (KrollFunction)options.get("callback");
 
-		initialized.set(true);
+		initialize(options);
 
-		// dispatch saved start notification
-		String startPush = startPushData.getAndSet(null);
-		if (startPush != null) {
-			onNotificationOpened(startPush);
-		}
-
-		PushManager.initializePushManager(TiApplication.getInstance(), pushwooshAppId, googleProjectId);
-		pushManager = PushManager.getInstance(TiApplication.getInstance());
-
-		try {
-			pushManager.onStartup(TiApplication.getInstance());
-			pushManager.registerForPushNotifications();
-		} catch (Exception e) {
-			e.printStackTrace();
-			onRegistrationFailed("Failed to register for push notifications");
-			return;
-		}
+		registerForPushNotifications(success, error);
 
 		Log.d(LCAT, "Push: finished registering for pushes");
-
-		return;
 	}
 
 	@Kroll.method
 	public void unregister() {
 		Log.d(LCAT, "unregister called");
-		
-		if (pushManager == null) {
-			return;
-		}
-		pushManager.unregisterForPushNotifications();	
+
+		Pushwoosh.getInstance().unregisterForPushNotifications();
 	}
-	
+
 	@Kroll.method
 	public void startTrackingGeoPushes() {
 		Log.d(LCAT, "start tracking geo pushes called");
-		
-		if (pushManager == null) {
-			return;
-		}
-		pushManager.startTrackingGeoPushes();
+
+		PushwooshLocation.startLocationTracking();
 	}
- 
+
 	@Kroll.method
 	public void stopTrackingGeoPushes() {
 		Log.d(LCAT, "stop tracking geo pushes called");
-		
-		if (pushManager == null) {
-			return;
-		}
-		pushManager.stopTrackingGeoPushes();
+
+		PushwooshLocation.stopLocationTracking();
 	}
 
 	@Kroll.method
 	public void setTags(HashMap params)
 	{
-		if (pushManager == null) {
-			return;
-		}
-
-		PushManager.sendTags(TiApplication.getInstance(), params, null);
+		Pushwoosh.getInstance().sendTags(Tags.fromJson(JsonUtils.mapToJson(params)), null);
 	}
 
 	@Kroll.method
 	public void getTags(final KrollFunction success, final KrollFunction error)
 	{
-		if (pushManager == null) {
-			return;
-		}
-
-		PushManager.getTagsAsync(TiApplication.getInstance(), new PushManager.GetTagsListener() {
+		Pushwoosh.getInstance().getTags(new Callback<TagsBundle, GetTagsException>() {
 			@Override
-			public void onTagsReceived(Map<String, Object> tags) {
-				HashMap result = new HashMap(tags);
-				success.callAsync(getKrollObject(), result);
-			}
-
-			@Override
-			public void onError(Exception e) {
-				HashMap result = new HashMap();
-				result.put("error", e.getMessage());
-				error.callAsync(getKrollObject(), result);
+			public void process(Result<TagsBundle, GetTagsException> result) {
+				if (result.isSuccess()) {
+					try {
+						HashMap<String, Object> resultMap = new HashMap<>(JsonUtils.jsonToMap(result.getData().toJson()));
+						success.callAsync(getKrollObject(), resultMap);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				} else {
+					HashMap resultMap = new HashMap();
+					error.callAsync(getKrollObject(), resultMap);
+				}
 			}
 		});
 	}
@@ -241,96 +205,89 @@ public class PushnotificationsModule extends KrollModule
 	@Kroll.method
 	public int scheduleLocalNotification(String message, int seconds)
 	{
-		return PushManager.scheduleLocalNotification(TiApplication.getInstance(), message, seconds);
+		LocalNotification notification = new LocalNotification.Builder()
+				.setMessage(message)
+				.setDelay(seconds)
+				.build();
+
+		return Pushwoosh.getInstance().scheduleLocalNotification(notification).getRequestId();
 	}
 
 	@Kroll.method
 	public void clearLocalNotification(int id)
 	{
-		PushManager.clearLocalNotification(TiApplication.getInstance(), id);
+		LocalNotificationReceiver.cancelNotification(id);
 	}
-	
+
 	@Kroll.method
 	public void clearLocalNotifications()
 	{
-		PushManager.clearLocalNotifications(TiApplication.getInstance());
+		LocalNotificationReceiver.cancelAll();
 	}
 
 	@Kroll.method
 	public void setMultiNotificationMode()
 	{
-		PushManager.setMultiNotificationMode(TiApplication.getInstance());
+		PushwooshNotificationSettings.setMultiNotificationMode(true);
 	}
 
 	@Kroll.method
 	public void setSimpleNotificationMode()
 	{
-		PushManager.setSimpleNotificationMode(TiApplication.getInstance());
+		PushwooshNotificationSettings.setMultiNotificationMode(false);
 	}
 
 	@Kroll.method
 	public void setBadgeNumber(int badgeNumber)
 	{
-		pushManager.setBadgeNumber(badgeNumber);
+		PushwooshBadge.setBadgeNumber(badgeNumber);
 	}
 
 	@Kroll.method
 	public int getBadgeNumber()
 	{
-		return pushManager.getBadgeNumber();
+		return PushwooshBadge.getBadgeNumber();
 	}
 
 	@Kroll.method
 	public void addBadgeNumber(int deltaBadge)
 	{
-		pushManager.addBadgeNumber(deltaBadge);
+		PushwooshBadge.addBadgeNumber(deltaBadge);
 	}
 
 	@Kroll.method
 	public void setUserId(String userId)
 	{
-		pushManager.setUserId(TiApplication.getInstance(), userId);
+		PushwooshInApp.getInstance().setUserId(userId);
 	}
 
 	@Kroll.method
 	public void postEvent(String event, HashMap attributes)
 	{
-		InAppFacade.postEvent(TiApplication.getInstance().getRootActivity(), event, (Map<String, Object>)attributes);
+		PushwooshInApp.getInstance().postEvent(event, Tags.fromJson(JsonUtils.mapToJson((Map<String, Object>)attributes));
 	}
 
 	@Kroll.method
 	public String getHwid()
 	{
-		return PushManager.getPushwooshHWID(TiApplication.getInstance());
+		return Pushwoosh.getInstance().getHwid();
 	}
 
 	@Kroll.method
 	public String getPushToken()
 	{
-		return PushManager.getPushToken(TiApplication.getInstance());
+		return Pushwoosh.getInstance().getPushToken();
 	}
 
 	@Kroll.method
-	public Map getNotificationSettings() 
+	public Map getNotificationSettings()
 	{
-		Map result = new HashMap<String, Object>();
-		boolean enabled = false;
-		try {
-			enabled = PushManager.isNotificationEnabled(TiApplication.getInstance().getRootActivity());
-		} catch (Exception e) {
-		}
+		boolean enabled = PushwooshNotificationSettings.areNotificationsEnabled();
 
-		result.put("enabled", enabled);
-		return result;
+		return Collections.singletonMap("enabled", enabled);
 	}
 
-	static void saveStartPush(String messageData)
-	{
-		Log.i(LCAT, "Start push saved: " + messageData);
-		startPushData.set(messageData);
-	}
-
-	void onNotificationOpened(final String messageData) 
+	private void onNotificationOpened(final String messageData)
 	{
 		if (!initialized.get() || !isTitaniumReady()) {
 			saveStartPush(messageData);
@@ -339,9 +296,9 @@ public class PushnotificationsModule extends KrollModule
 
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
 			@Override
-			public void run() 
+			public void run()
 			{
-				HashMap data = new HashMap();
+				HashMap<String, Object> data = new HashMap<>();
 				data.put("data", messageData);
 
 				if (messageCallback != null) {
@@ -355,39 +312,11 @@ public class PushnotificationsModule extends KrollModule
 		});
 	}
 
-	boolean onPushReceived(final String messageData, boolean foreground) 
-	{
-		boolean handled = false;
-		if (!isTitaniumReady()) {
-			Log.w(LCAT, "titanium is not ready yet");
-			return handled;
-		}
-
-		if (foreground && broadcastPush) {
-			onNotificationOpened(messageData);
-			handled = true;
-		}
-
-		if (pushReceiveCallback == null) {
-			return handled;
-		}
-
-		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
-			@Override
-			public void run() 
-			{
-				pushReceiveCallback.call(getKrollObject(), convertMessageData(messageData));
-			}
-		});
-
-		return handled;
-	}
-
-	void onRegistrationSucceed(final String registrationId) 
+	private void onRegistrationSucceed(final String registrationId)
 	{
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
 			@Override
-			public void run() 
+			public void run()
 			{
 				HashMap data = new HashMap();
 				data.put("registrationId", registrationId);
@@ -400,10 +329,10 @@ public class PushnotificationsModule extends KrollModule
 		});
 	}
 
-	void onRegistrationFailed(final String error) {
+	private void onRegistrationFailed(final String error) {
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
 			@Override
-			public void run() 
+			public void run()
 			{
 				HashMap data = new HashMap();
 				data.put("error", error);
@@ -450,6 +379,56 @@ public class PushnotificationsModule extends KrollModule
 		}
 
 		return true;
+	}
+
+
+	static boolean onPushOpened(String message){
+		if (PushnotificationsModule.INSTANCE != null) {
+			PushnotificationsModule.INSTANCE.onNotificationOpened(message);
+			return true;
+		} else {
+			Log.d("NotificationReceiver", "PushnotificationsModule.INSTANCE is null");
+			PushnotificationsModule.saveStartPush(message);
+			return false;
+		}
+	}
+
+	static boolean onPushReceived(final String messageData, boolean foreground)
+	{
+		if(INSTANCE == null){
+			return false;
+		}
+
+		boolean handled = false;
+		if (!INSTANCE.isTitaniumReady()) {
+			Log.w(LCAT, "titanium is not ready yet");
+			return handled;
+		}
+
+		if (foreground && INSTANCE.broadcastPush) {
+			INSTANCE.onNotificationOpened(messageData);
+			handled = true;
+		}
+
+		if (INSTANCE.pushReceiveCallback == null) {
+			return handled;
+		}
+
+		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run()
+			{
+				INSTANCE.pushReceiveCallback.call(INSTANCE.getKrollObject(), INSTANCE.convertMessageData(messageData));
+			}
+		});
+
+		return handled;
+	}
+
+	private static void saveStartPush(String messageData)
+	{
+		Log.i(LCAT, "Start push saved: " + messageData);
+		startPushData.set(messageData);
 	}
 }
 
