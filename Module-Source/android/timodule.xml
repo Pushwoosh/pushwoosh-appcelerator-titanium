@@ -25,38 +25,6 @@
 				<meta-data android:name="com.pushwoosh.internal.plugin_provider"
 				           android:value="com.pushwoosh.module.internal.TitaniumPluginProvider" />
 				
-				<meta-data
-					android:name="com.pushwoosh.notification_service_extension"
-					android:value="com.pushwoosh.reactnativeplugin.PushwooshNotificationServiceExtension" />
-				
-				<!--BEACON-->
-				<service
-					android:name="com.pushwoosh.thirdparty.radiusnetworks.ibeacon.service.IBeaconService"
-					android:enabled="true"
-					android:exported="true"
-					android:isolatedProcess="false"
-					android:label="iBeacon" />
-				<service
-					android:name="com.pushwoosh.thirdparty.radiusnetworks.ibeacon.IBeaconIntentProcessor"
-					android:enabled="true" />
-				<service android:name="com.pushwoosh.beacon.PushBeaconService" />
-				
-				<!--LOCATION-->
-				<meta-data
-					android:name="com.pushwoosh.plugin.location"
-					android:value="com.pushwoosh.location.LocationPlugin" />
-				
-				<service android:name="com.pushwoosh.location.network.GeoLocationServiceApi16" />
-				
-				<activity
-					android:name="com.pushwoosh.location.internal.utils.ResolutionActivity"
-					android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-				
-				<service
-					android:name="com.pushwoosh.location.network.GeoLocationServiceApi21"
-					android:exported="true"
-					android:permission="android.permission.BIND_JOB_SERVICE" />
-			
 				<provider
 					android:name="com.pushwoosh.PushwooshInitProvider"
 					android:authorities="${tiapp.properties['id']}.pushwooshinitprovider"
