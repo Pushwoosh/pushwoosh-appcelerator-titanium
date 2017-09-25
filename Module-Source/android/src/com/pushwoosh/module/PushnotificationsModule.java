@@ -189,7 +189,7 @@ public class PushnotificationsModule extends KrollModule
 			public void process(Result<TagsBundle, GetTagsException> result) {
 				if (result.isSuccess()) {
 					try {
-						HashMap<String, Object> resultMap = new HashMap<>(JsonUtils.jsonToMap(result.getData().toJson()));
+						HashMap<String, Object> resultMap = new HashMap<String, Object>(JsonUtils.jsonToMap(result.getData().toJson()));
 						success.callAsync(getKrollObject(), resultMap);
 					} catch (JSONException e) {
 						e.printStackTrace();
@@ -264,7 +264,7 @@ public class PushnotificationsModule extends KrollModule
 	@Kroll.method
 	public void postEvent(String event, HashMap attributes)
 	{
-		PushwooshInApp.getInstance().postEvent(event, Tags.fromJson(JsonUtils.mapToJson((Map<String, Object>)attributes));
+		PushwooshInApp.getInstance().postEvent(event, Tags.fromJson(JsonUtils.mapToJson((Map<String, Object>)attributes)));
 	}
 
 	@Kroll.method
@@ -298,7 +298,7 @@ public class PushnotificationsModule extends KrollModule
 			@Override
 			public void run()
 			{
-				HashMap<String, Object> data = new HashMap<>();
+				HashMap<String, Object> data = new HashMap<String, Object>();
 				data.put("data", messageData);
 
 				if (messageCallback != null) {
