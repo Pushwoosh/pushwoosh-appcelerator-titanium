@@ -9,7 +9,7 @@
 #import "TiBase.h"
 #import "TiHost.h"
 #import "TiUtils.h"
-
+#import <Pushwoosh/Pushwoosh.h>
 #import <UserNotifications/UserNotifications.h>
 
 static __strong NSDictionary * gStartPushData = nil;
@@ -239,9 +239,9 @@ static __strong NSDictionary * gStartPushData = nil;
 	args = [self wrapArguments:args];
 	
 	ENSURE_ARG_COUNT(args, 1);
-	ENSURE_TYPE(args, NSString);
+    ENSURE_TYPE(args[0], NSString);
 
-	[[PushNotificationManager pushManager] setUserId:args];
+    [[PWInAppManager sharedManager] setUserId:args[0]];
 }
 
 - (void)postEvent:(id)args
@@ -328,6 +328,15 @@ static __strong NSDictionary * gStartPushData = nil;
 	[self.errorCallback call:@[ @{ @"error" : error.localizedDescription} ] thisObject:nil];
 }
 
+- (void)onPushReceived:(PushNotificationManager *)pushManager withNotification:(NSDictionary *)pushNotification onStart:(BOOL)onStart
+{
+    if (onStart) {
+        gStartPushData = pushNotification;
+    }
+    
+    [self dispatchPushReceived:pushNotification onStart:onStart];
+}
+
 - (void)onPushAccepted:(PushNotificationManager *)manager withNotification:(NSDictionary *)pushNotification onStart:(BOOL)onStart
 {
 	NSLog(@"[DEBUG][PW-APPC] push accepted: onStart: %d, payload: %@", onStart, pushNotification);
@@ -336,51 +345,67 @@ static __strong NSDictionary * gStartPushData = nil;
 		gStartPushData = pushNotification;
 	}
 	
-	[self dispatchPush:pushNotification onStart:onStart];
+	[self dispatchPushAccepted:pushNotification onStart:onStart];
 }
 
-- (void) dispatchPush:(NSDictionary*)pushData onStart:(BOOL)onStart
+- (NSDictionary *)pushInfoWithPushData:(NSDictionary *)pushData onStart:(BOOL)onStart {
+    NSMutableDictionary *pushInfo = [NSMutableDictionary new];
+    
+    pushInfo[@"data"] = pushData;
+    pushInfo[@"foreground"] = @(!onStart);
+    
+    id alert = pushData[@"aps"][@"alert"];
+    NSString *message = alert;
+    if ([alert isKindOfClass:[NSDictionary class]]) {
+        message = alert[@"body"];
+    }
+    
+    if (message) {
+        pushInfo[@"message"] = message;
+    }
+    
+    NSString *userdata = pushData[@"u"];
+    if (userdata) {
+        id parsedData = [NSJSONSerialization JSONObjectWithData:[userdata dataUsingEncoding:NSUTF8StringEncoding]
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:nil];
+        
+        if (parsedData) {
+            pushInfo[@"extras"] = parsedData;
+        }
+    }
+    return pushInfo;
+}
+
+- (void)dispatchPushReceived:(NSDictionary *)pushData onStart:(BOOL)onStart
 {
-	NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
-	
-	NSMutableDictionary *pushInfo = [NSMutableDictionary new];
-	
-	pushInfo[@"data"] = pushData;
-	pushInfo[@"foreground"] = @(!onStart);
-	
-	id alert = pushData[@"aps"][@"alert"];
-	NSString *message = alert;
-	if ([alert isKindOfClass:[NSDictionary class]]) {
-		message = alert[@"body"];
-	}
-	
-	if (message) {
-		pushInfo[@"message"] = message;
-	}
-	
-	NSString *userdata = pushData[@"u"];
-	if (userdata) {
-		id parsedData = [NSJSONSerialization JSONObjectWithData:[userdata dataUsingEncoding:NSUTF8StringEncoding]
-														options:NSJSONReadingMutableContainers
-														  error:nil];
-		
-		if (parsedData) {
-			pushInfo[@"extras"] = parsedData;
-		}
-	}
+    NSLog(@"[INFO][PW-APPC] dispatch push accepted: %@", pushData);
+    
+    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData onStart:onStart];
+    
+    [self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+    [self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
+}
 
-	[self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+- (void)dispatchPushAccepted:(NSDictionary *)pushData onStart:(BOOL)onStart
+{
+    NSLog(@"[INFO][PW-APPC] dispatch push accepted: %@", pushData);
+    
+    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData onStart:onStart];
+    
+    [self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+    [self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
+}
 
-	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-		[self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
-	}
-	else if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-		[self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
-		[self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
-	}
-	else {
-		[self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
-	}
+- (void)dispatchPush:(NSDictionary *)pushData onStart:(BOOL)onStart
+{
+    NSLog(@"[INFO][PW-APPC] dispatch push: %@", pushData);
+    
+    NSDictionary *pushInfo = [self pushInfoWithPushData:pushData onStart:onStart];
+    
+    [self.messageCallback call:@[ @{ @"data" : pushData } ] thisObject:nil];
+    [self.pushReceiveCallback call:@[ pushInfo ] thisObject:nil];
+    [self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
 }
 
 @end
