@@ -4,6 +4,8 @@
 		Similar to tiapp.xml, but contains module/platform specific
 		configuration in <iphone>, <android>, and <mobileweb> sections
 	-->
+	<sdk-version>6.1.0.GA</sdk-version>
+	
 	<iphone>
 	</iphone>
 	<android xmlns:android="http://schemas.android.com/apk/res/android">
