@@ -383,7 +383,7 @@ public class PushnotificationsModule extends KrollModule {
 		}
 	}
 
-	static boolean onPushReceived(final String messageData, boolean foreground) {
+	static boolean onPushReceived(final String messageData, final boolean foreground) {
 		if (INSTANCE == null) {
 			return false;
 		}
