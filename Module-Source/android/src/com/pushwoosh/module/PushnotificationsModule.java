@@ -16,6 +16,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.pushwoosh.Pushwoosh;
 import com.pushwoosh.badge.PushwooshBadge;
@@ -62,6 +64,8 @@ public class PushnotificationsModule extends KrollModule
 	private KrollFunction messageCallback = null;
 	private KrollFunction pushOpenCallback = null;
 	private KrollFunction pushReceiveCallback = null;
+
+	private Handler mainHandler = new Handler(Looper.getMainLooper());
 
 	// Mandatory method
 	@Kroll.onAppCreate
@@ -308,7 +312,7 @@ public class PushnotificationsModule extends KrollModule
 			return;
 		}
 
-		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
+		mainHandler.post(new Runnable() {
 			@Override
 			public void run()
 			{
@@ -331,7 +335,7 @@ public class PushnotificationsModule extends KrollModule
 
 	private void onRegistrationSucceed(final String registrationId)
 	{
-		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
+		mainHandler.post(new Runnable() {
 			@Override
 			public void run()
 			{
