@@ -41,13 +41,15 @@ import org.appcelerator.titanium.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+import static android.R.attr.data;
+
 @Kroll.module(name="Pushwoosh", id="com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule
 {
 	public static PushnotificationsModule INSTANCE = null;
 
 	private static final String LCAT = "PushnotificationsModule";
-	private static final boolean DBG = TiConfig.LOGD;
 
 	private static AtomicReference<String> startPushData = new AtomicReference<String>(null);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
@@ -75,6 +77,10 @@ public class PushnotificationsModule extends KrollModule
 		INSTANCE = this;
 		Log.d(LCAT, "Push: create module");
 
+		initBroadcastPushFormConfig();
+	}
+
+	private void initBroadcastPushFormConfig() {
 		try {
 			Context context = TiApplication.getInstance();
 			ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
@@ -100,11 +106,42 @@ public class PushnotificationsModule extends KrollModule
 		// dispatch saved start notification
 		String startPush = startPushData.getAndSet(null);
 		if (startPush != null) {
-			onNotificationOpened(startPush);
+			notifyPushReceived(startPush);
+			notifyPushOpened(startPush);
 		}
 
 		Pushwoosh.getInstance().setAppId(pushwooshAppId);
 		Pushwoosh.getInstance().setSenderId(googleProjectId);
+	}
+
+	@Kroll.method
+	public void onPushOpened(KrollFunction callback)
+	{
+		pushOpenCallback = callback;
+	}
+
+	@Kroll.method
+	public void onPushReceived(KrollFunction callback)
+	{
+		pushReceiveCallback = callback;
+	}
+
+	@Deprecated
+	@Kroll.method
+	public void pushNotificationsRegister(HashMap options)
+	{
+		Log.w(LCAT, "<pushNotificationsRegister> method is deprecated! Use <initialize> and <register> instead");
+
+		KrollFunction success = (KrollFunction) options.get("success");
+		KrollFunction error = (KrollFunction) options.get("error");
+
+		messageCallback = (KrollFunction)options.get("callback");
+
+		initialize(options);
+
+		registerForPushNotifications(success, error);
+
+		Log.d(LCAT, "Push: finished registering for pushes");
 	}
 
 	@Kroll.method
@@ -123,35 +160,6 @@ public class PushnotificationsModule extends KrollModule
 				}
 			}
 		});
-	}
-
-	@Kroll.method
-	public void onPushOpened(KrollFunction callback)
-	{
-		pushOpenCallback = callback;
-	}
-
-	@Kroll.method
-	public void onPushReceived(KrollFunction callback)
-	{
-		pushReceiveCallback = callback;
-	}
-
-	@Kroll.method
-	public void pushNotificationsRegister(HashMap options)
-	{
-		Log.w(LCAT, "<pushNotificationsRegister> method is deprecated! Use <initialize> and <register> instead");
-
-		KrollFunction success = (KrollFunction) options.get("success");
-		KrollFunction error = (KrollFunction) options.get("error");
-
-		messageCallback = (KrollFunction)options.get("callback");
-
-		initialize(options);
-
-		registerForPushNotifications(success, error);
-
-		Log.d(LCAT, "Push: finished registering for pushes");
 	}
 
 	@Kroll.method
@@ -287,6 +295,12 @@ public class PushnotificationsModule extends KrollModule
 		return Collections.singletonMap("enabled", enabled);
 	}
 
+	private void notifyPushReceived(String messageData) {
+		if (pushReceiveCallback != null) {
+			pushReceiveCallback.call(INSTANCE.getKrollObject(), INSTANCE.convertMessageData(messageData));
+		}
+	}
+
 	private void onNotificationOpened(final String messageData)
 	{
 		if (!initialized.get() || !isTitaniumReady()) {
@@ -298,18 +312,21 @@ public class PushnotificationsModule extends KrollModule
 			@Override
 			public void run()
 			{
-				HashMap<String, Object> data = new HashMap<String, Object>();
-				data.put("data", messageData);
-
-				if (messageCallback != null) {
-					messageCallback.call(getKrollObject(), data);
-				}
-
-				if (pushOpenCallback != null) {
-					pushOpenCallback.call(getKrollObject(), convertMessageData(messageData));
-				}
+				notifyPushOpened(messageData);
 			}
 		});
+	}
+
+	private void notifyPushOpened(String messageData) {
+		if (messageCallback != null) {
+			HashMap<String, Object> data = new HashMap<String, Object>();
+			data.put("data", messageData);
+			messageCallback.call(getKrollObject(), data);
+		}
+
+		if (pushOpenCallback != null) {
+			pushOpenCallback.call(getKrollObject(), convertMessageData(messageData));
+		}
 	}
 
 	private void onRegistrationSucceed(final String registrationId)
@@ -383,12 +400,12 @@ public class PushnotificationsModule extends KrollModule
 
 
 	static boolean onPushOpened(String message){
-		if (PushnotificationsModule.INSTANCE != null) {
-			PushnotificationsModule.INSTANCE.onNotificationOpened(message);
+		if (INSTANCE != null) {
+			INSTANCE.onNotificationOpened(message);
 			return true;
 		} else {
 			Log.d("NotificationReceiver", "PushnotificationsModule.INSTANCE is null");
-			PushnotificationsModule.saveStartPush(message);
+			saveStartPush(message);
 			return false;
 		}
 	}
@@ -399,30 +416,22 @@ public class PushnotificationsModule extends KrollModule
 			return false;
 		}
 
-		boolean handled = false;
-		if (!INSTANCE.isTitaniumReady()) {
+		if (!INSTANCE.isTitaniumReady() || !INSTANCE.initialized.get()) {
 			Log.w(LCAT, "titanium is not ready yet");
-			return handled;
-		}
-
-		if (foreground && INSTANCE.broadcastPush) {
-			INSTANCE.onNotificationOpened(messageData);
-			handled = true;
-		}
-
-		if (INSTANCE.pushReceiveCallback == null) {
-			return handled;
+			return false;
 		}
 
 		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run()
 			{
-				INSTANCE.pushReceiveCallback.call(INSTANCE.getKrollObject(), INSTANCE.convertMessageData(messageData));
+				INSTANCE.notifyPushReceived(messageData);
+
+				INSTANCE.notifyPushOpened(messageData);
 			}
 		});
 
-		return handled;
+		return foreground && INSTANCE.broadcastPush;
 	}
 
 	private static void saveStartPush(String messageData)
