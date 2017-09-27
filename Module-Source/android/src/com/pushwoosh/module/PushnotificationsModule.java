@@ -426,8 +426,6 @@ public class PushnotificationsModule extends KrollModule
 			public void run()
 			{
 				INSTANCE.notifyPushReceived(messageData);
-
-				INSTANCE.notifyPushOpened(messageData);
 			}
 		});
 
