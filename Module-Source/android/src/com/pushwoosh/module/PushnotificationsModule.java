@@ -44,6 +44,7 @@ import org.json.JSONObject;
 
 
 import static android.R.attr.data;
+import static android.R.attr.handle;
 
 @Kroll.module(name = "Pushwoosh", id = "com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule {
@@ -323,7 +324,7 @@ public class PushnotificationsModule extends KrollModule {
 	}
 
 	private void onRegistrationFailed(final String error) {
-		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
+		mainHandler.post(new Runnable() {
 			@Override
 			public void run() {
 				HashMap data = new HashMap();
@@ -393,7 +394,7 @@ public class PushnotificationsModule extends KrollModule {
 			return false;
 		}
 
-		TiApplication.getInstance().getRootActivity().runOnUiThread(new Runnable() {
+		INSTANCE.mainHandler.post(new Runnable() {
 			@Override
 			public void run() {
 				INSTANCE.notifyPushReceived(messageData);
