@@ -86,7 +86,7 @@ public class PushnotificationsModule extends KrollModule {
 			Context context = TiApplication.getInstance();
 			ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
 			if (ai != null && ai.metaData != null) {
-				broadcastPush = ai.metaData.getBoolean("PW_BROADCAST_PUSH", false);
+				broadcastPush = ai.metaData.getBoolean("PW_BROADCAST_PUSH", false) || ai.metaData.getBoolean("com.pushwoosh.handlePushInForeground", true);
 			}
 
 		} catch (Exception e) {
