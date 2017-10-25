@@ -7,4 +7,9 @@ public class TitaniumPluginProvider implements PluginProvider {
 	public String getPluginType() {
 		return "Titanium";
 	}
+
+	@Override
+	public int richMediaStartDelay() {
+		return DEFAULT_RICH_MEDIA_START_DELAY;
+	}
 }
