@@ -54,6 +54,11 @@
 			<!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
 			<!-- <uses-permission-sdk-23 android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> -->
 			<application>
+				<!-- play-services-base -->
+				<activity android:name='com.google.android.gms.common.api.GoogleApiActivity'
+				          android:exported='false'
+				          android:theme='@android:style/Theme.Translucent.NoTitleBar' />
+				
 				<meta-data android:name="com.google.android.gms.version"
 				           android:value="11400000" />
 				
