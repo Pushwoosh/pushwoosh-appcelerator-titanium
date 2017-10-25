@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -42,10 +40,6 @@ import org.appcelerator.titanium.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-import static android.R.attr.data;
-import static android.R.attr.handle;
-
 @Kroll.module(name = "Pushwoosh", id = "com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule {
 	public static PushnotificationsModule INSTANCE = null;
@@ -55,7 +49,7 @@ public class PushnotificationsModule extends KrollModule {
 	private static AtomicReference<String> startPushData = new AtomicReference<String>(null);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
 
-	private boolean broadcastPush = true;
+	private boolean foregroundPush = true;
 
 	private final AtomicReference<KrollFunction> registrationSuccessCallback = new AtomicReference<KrollFunction>(null);
 	private final AtomicReference<KrollFunction> registrationErrorCallback = new AtomicReference<KrollFunction>(null);
@@ -86,7 +80,7 @@ public class PushnotificationsModule extends KrollModule {
 			Context context = TiApplication.getInstance();
 			ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
 			if (ai != null && ai.metaData != null) {
-				broadcastPush = ai.metaData.getBoolean("PW_BROADCAST_PUSH", false);
+				foregroundPush = ai.metaData.getBoolean("PW_BROADCAST_PUSH", false) || ai.metaData.getBoolean("com.pushwoosh.foreground_push", false);
 			}
 
 		} catch (Exception e) {
@@ -399,13 +393,13 @@ public class PushnotificationsModule extends KrollModule {
 			public void run() {
 				INSTANCE.notifyPushReceived(messageData);
 
-				if (foreground && INSTANCE.broadcastPush) {
+				if (foreground && INSTANCE.foregroundPush) {
 					INSTANCE.notifyPushOpened(messageData);
 				}
 			}
 		});
 
-		return foreground && INSTANCE.broadcastPush;
+		return foreground && !INSTANCE.foregroundPush;
 	}
 
 	private static void saveStartPush(String messageData) {
