@@ -52,3 +52,8 @@ Ti.API.info("Notification settings: " + JSON.stringify(pushwoosh.getNotification
 // Inapp & Events
 //pushwoosh.setUserId("pushwooshid%42");
 //pushwoosh.postEvent("buttonPressed", { "buttonNumber" : 4, "buttonLabel" : "banner" });
+
+// Local notifications
+//pushwoosh.clearLocalNotifications();
+//var notificationId = pushwoosh.scheduleLocalNotification("hello, world", 3);
+//pushwoosh.clearLocalNotification(notificationId);

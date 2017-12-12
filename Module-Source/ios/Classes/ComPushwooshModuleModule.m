@@ -9,8 +9,12 @@
 #import "TiBase.h"
 #import "TiHost.h"
 #import "TiUtils.h"
+#import "TiApp.h"
 #import <Pushwoosh/Pushwoosh.h>
 #import <UserNotifications/UserNotifications.h>
+#import "PWMUserNotificationCenterDelegateProxy.h"
+
+NSString * const PWMLocalNotificationUidKey = @"pw_localnotification_uid";
 
 static __strong NSDictionary * gStartPushData = nil;
 
@@ -56,10 +60,11 @@ static __strong NSDictionary * gStartPushData = nil;
 	NSString* appCode = options[@"application"];
 
 	ENSURE_TYPE(appCode, NSString);
-
+    
 	[PushNotificationManager initializeWithAppCode:appCode appName:nil];
 	PushNotificationManager * pushManager = [PushNotificationManager pushManager];
-	[UNUserNotificationCenter currentNotificationCenter].delegate = [PushNotificationManager pushManager].notificationCenterDelegate;
+    
+    [PWMUserNotificationCenterDelegateProxy setupWithPushDelegate:[PushNotificationManager pushManager].notificationCenterDelegate];
 
 	if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_ALERT_TYPE"] &&
 		![[NSBundle mainBundle] objectForInfoDictionaryKey:@"Pushwoosh_SHOW_ALERT"]) {
@@ -99,7 +104,6 @@ static __strong NSDictionary * gStartPushData = nil;
 			self.errorCallback = args[1];
 		}
 	}
-
 	[[PushNotificationManager pushManager] registerForPushNotifications];
 }
 
@@ -156,7 +160,7 @@ static __strong NSDictionary * gStartPushData = nil;
 	[pushManager setShowPushnotificationAlert:NO];
 	[pushManager setDelegate:self];
 	[pushManager sendAppOpen];
-
+    
 	// register for push notifications!
 	NSLog(@"[DEBUG][PW-APPC] registering for push notifications");
 	[[PushNotificationManager pushManager] registerForPushNotifications];
@@ -303,6 +307,79 @@ static __strong NSDictionary * gStartPushData = nil;
 		 @"pushSound" : @((BOOL)![settings[@"pushSound"] isEqualToString:@"0"])
 	};
 	return result;
+}
+
+- (id)scheduleLocalNotification:(id)args {
+    ENSURE_ARG_COUNT(args, 2)
+    ENSURE_TYPE(args[0], NSString);
+    ENSURE_TYPE(args[1], NSNumber);
+    
+    NSString *body = args[0];
+    NSInteger delay = [args[1] integerValue];
+
+    static int32_t uids = 0;
+    NSNumber *uid = @(uids++);
+    [self sendLocalNotificationWithBody:body delay:delay identifier:[uid integerValue]];
+    return uid;
+} //(String message, int seconds);
+
+- (NSString *)stringIdentifierFromInt:(NSInteger)identifier {
+    return [PWMLocalNotificationUidKey stringByAppendingFormat:@"%ld", (long)identifier];
+}
+
+- (void)sendLocalNotificationWithBody:(NSString *)body delay:(NSUInteger)delay identifier:(NSInteger)identifier {
+    if (@available(iOS 10, *)) {
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+        content.body = body;
+        content.sound = [UNNotificationSound defaultSound];
+        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:delay repeats:NO];
+        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[self stringIdentifierFromInt:identifier]
+                                                                              content:content
+                                                                              trigger:trigger];
+        
+        [center addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+            if (error != nil) {
+                NSLog(@"Something went wrong: %@", error);
+            }
+        }];
+    } else {
+        UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+        localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:delay];
+        localNotification.alertBody = body;
+        localNotification.timeZone = [NSTimeZone defaultTimeZone];
+        localNotification.userInfo = @{ PWMLocalNotificationUidKey : @(identifier) };
+        [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+    }
+}
+
+- (void)clearLocalNotification:(id)args {
+    args = [self wrapArguments:args];
+    ENSURE_ARG_COUNT(args, 1)
+    ENSURE_TYPE(args[0], NSNumber);
+    
+    NSNumber *uid = args[0];
+
+    if (@available(iOS 10, *)) {
+        [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[ [self stringIdentifierFromInt:[uid integerValue]] ]];
+    } else {
+        __block UILocalNotification *notificationToDelete = nil;
+        [[UIApplication sharedApplication].scheduledLocalNotifications enumerateObjectsUsingBlock:^(UILocalNotification * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([[obj.userInfo objectForKey:PWMLocalNotificationUidKey] isEqual:uid]) {
+                notificationToDelete = obj;
+                *stop = YES;
+            }
+        }];
+        if (notificationToDelete) {
+            [UIApplication sharedApplication].scheduledLocalNotifications = [[UIApplication sharedApplication].scheduledLocalNotifications filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                return evaluatedObject != notificationToDelete;
+            }]];
+        }
+    }
+}
+
+- (void)clearLocalNotifications:(id)unused {
+    [UIApplication sharedApplication].scheduledLocalNotifications = @[];
 }
 
 #pragma Internal
