@@ -21,3 +21,5 @@
 @property BOOL initialized;
 
 @end
+
+extern NSString * const PWMLocalNotificationUidKey;
