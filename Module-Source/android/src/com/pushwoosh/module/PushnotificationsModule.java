@@ -266,8 +266,11 @@ public class PushnotificationsModule extends KrollModule {
 	@Kroll.method
 	public Map getNotificationSettings() {
 		boolean enabled = PushwooshNotificationSettings.areNotificationsEnabled();
-
-		return Collections.singletonMap("enabled", enabled);
+        
+        Map<String, Boolean> result = new HashMap<>();
+        result.put("enabled", enabled);
+        
+		return result;
 	}
 
 	private void notifyPushReceived(String messageData) {
