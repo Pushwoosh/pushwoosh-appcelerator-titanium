@@ -485,6 +485,98 @@ static __strong NSDictionary * gStartPushData = nil;
     [self.pushOpenCallback call:@[ pushInfo ] thisObject:nil];
 }
 
+
+/**
+ Indicates availability of the GDPR compliance solution.
+ */
+#pragma Public APIs
+-(BOOL)isAvailable:(id)unused{
+    return [PWGDPRManager sharedManager].isAvailable;
+}
+
+-(BOOL)isCommunicationEnabled:(id)unused{
+    return [PWGDPRManager sharedManager].isCommunicationEnabled;
+}
+
+-(BOOL)isDeviceDataRemoved:(id)unused{
+    return [PWGDPRManager sharedManager].isDeviceDataRemoved;
+}
+
+/**
+ Enable/disable all communication with Pushwoosh. Enabled by default.
+ */
+- (void)setCommunicationEnabled:(id)args {
+   // ENSURE_TYPE(args[0], NSString);
+    ENSURE_TYPE(args[1], KrollCallback);
+    BOOL *enable = [args[0] boolValue];
+    KrollCallback *successCallback = nil;
+    KrollCallback *errorCallback = nil;
+    if ([args count] > 1) {
+        ENSURE_TYPE(args[1], KrollCallback);
+        successCallback = args[1];
+    }
+    if ([args count] > 2) {
+        ENSURE_TYPE(args[2], KrollCallback);
+        errorCallback = args[2];
+    }
+    
+    [[PWGDPRManager sharedManager] setCommunicationEnabled:enable completion:^(NSError *error) {
+        if (error) {
+            if(errorCallback){
+                [errorCallback call:@[@{ @"error" : error.localizedDescription }] thisObject:nil];
+            }
+        }else{
+            if(successCallback){
+                [successCallback call:nil thisObject:nil];
+            }
+        }
+    }];
+    
+}
+
+/**
+ Removes all device data from Pushwoosh and stops all interactions and communication permanently.
+ */
+
+
+- (void)removeAllDeviceDataWithCompletion:(id)args
+{
+    ENSURE_TYPE(args[0], KrollCallback);
+    ENSURE_ARG_COUNT(args, 1);
+    KrollCallback *successCallback = args[0];
+    KrollCallback *errorCallback = args[1];
+    
+    if ([args count] > 1) {
+        ENSURE_TYPE(args[1], KrollCallback);
+        errorCallback = args[1];
+    }
+    
+    [[PWGDPRManager sharedManager] removeAllDeviceDataWithCompletion:^(NSError *error) {
+        if (error) {
+            if(errorCallback){
+                [errorCallback call:@[@{ @"error" : error.localizedDescription }] thisObject:nil];
+            }
+        }else{
+            if(successCallback){
+                [successCallback call:nil thisObject:nil];
+            }
+        }
+    }];
+}
+
+-(void) showGDPRConsentUI:(id)unused{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[PWGDPRManager sharedManager] showGDPRConsentUI];
+    });
+    
+}
+
+-(void) showGDPRDeletionUI:(id)unused{
+    dispatch_async(dispatch_get_main_queue(), ^{
+       [[PWGDPRManager sharedManager] showGDPRDeletionUI];
+    });
+}
+
 @end
 
 @implementation UIApplication(InternalPushRuntime)
@@ -508,5 +600,6 @@ static __strong NSDictionary * gStartPushData = nil;
 - (NSObject<PushNotificationDelegate> *)getPushwooshDelegate {
 	return self;
 }
+
 
 @end
