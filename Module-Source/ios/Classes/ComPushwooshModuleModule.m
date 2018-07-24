@@ -505,18 +505,31 @@ static __strong NSDictionary * gStartPushData = nil;
     return [PWGDPRManager sharedManager].isDeviceDataRemoved;
 }
 
-static void callBackGDPR(NSError *error, KrollCallback *errorCallback, KrollCallback *successCallback) {
-    if (error) {
-        if(errorCallback){
-            [errorCallback call:@[@{ @"error" : error.localizedDescription }] thisObject:nil];
-        }
-    } else {
-        if(successCallback){
-            [successCallback call:nil thisObject:nil];
-        }
+- (void(^)(NSError *))wrapCallback:(id)args callbackIndex:(NSUInteger)index
+{
+    KrollCallback *successCallback = nil;
+    KrollCallback *errorCallback = nil;
+    if ([args count] > index) {
+        ENSURE_TYPE(args[index], KrollCallback);
+        successCallback = args[index];
     }
-}
+    if ([args count] > (index + 1)) {
+        ENSURE_TYPE(args[index + 1], KrollCallback);
+        errorCallback = args[index + 1];
+    }
 
+    return ^(NSError *error) {
+        if (error) {
+            if (errorCallback) {
+                [errorCallback call:@[@{ @"error" : error.localizedDescription }] thisObject:nil];
+            }
+        } else {
+            if (successCallback) {
+                [successCallback call:nil thisObject:nil];
+            }
+        }
+    };
+}
 /**
  Enable/disable all communication with Pushwoosh. Enabled by default.
  */
@@ -525,20 +538,7 @@ static void callBackGDPR(NSError *error, KrollCallback *errorCallback, KrollCall
     ENSURE_ARG_COUNT(args, 3);
     ENSURE_TYPE(args[0], NSNumber);
     BOOL *enable = [args[0] boolValue];
-    KrollCallback *successCallback = nil;
-    KrollCallback *errorCallback = nil;
-    if ([args count] > 1) {
-        ENSURE_TYPE(args[1], KrollCallback);
-        successCallback = args[1];
-    }
-    if ([args count] > 2) {
-        ENSURE_TYPE(args[2], KrollCallback);
-        errorCallback = args[2];
-    }
-    
-    [[PWGDPRManager sharedManager] setCommunicationEnabled:enable completion:^(NSError *error) {
-        callBackGDPR(error, errorCallback, successCallback);
-    }];
+    [[PWGDPRManager sharedManager] setCommunicationEnabled:enable completion:[self wrapCallback:args callbackIndex:1]];
 }
 
 /**
@@ -548,17 +548,7 @@ static void callBackGDPR(NSError *error, KrollCallback *errorCallback, KrollCall
 {
     ENSURE_TYPE(args[0], KrollCallback);
     ENSURE_ARG_COUNT(args, 1);
-    KrollCallback *successCallback = args[0];
-    KrollCallback *errorCallback = args[1];
-    
-    if ([args count] > 1) {
-        ENSURE_TYPE(args[1], KrollCallback);
-        errorCallback = args[1];
-    }
-    
-    [[PWGDPRManager sharedManager] removeAllDeviceDataWithCompletion:^(NSError *error) {
-           callBackGDPR(error, errorCallback, successCallback);
-    }];
+    [[PWGDPRManager sharedManager] removeAllDeviceDataWithCompletion:[self wrapCallback:args callbackIndex:0]];
 }
 
 - (void)showGDPRConsentUI:(id)unused
