@@ -505,11 +505,25 @@ static __strong NSDictionary * gStartPushData = nil;
     return [PWGDPRManager sharedManager].isDeviceDataRemoved;
 }
 
+static void callBackGDPR(NSError *error, KrollCallback *errorCallback, KrollCallback *successCallback) {
+    if (error) {
+        if(errorCallback){
+            [errorCallback call:@[@{ @"error" : error.localizedDescription }] thisObject:nil];
+        }
+    } else {
+        if(successCallback){
+            [successCallback call:nil thisObject:nil];
+        }
+    }
+}
+
 /**
  Enable/disable all communication with Pushwoosh. Enabled by default.
  */
 - (void)setCommunicationEnabled:(id)args
 {
+    ENSURE_ARG_COUNT(args, 3);
+    ENSURE_TYPE(args[0], NSNumber);
     BOOL *enable = [args[0] boolValue];
     KrollCallback *successCallback = nil;
     KrollCallback *errorCallback = nil;
@@ -523,15 +537,7 @@ static __strong NSDictionary * gStartPushData = nil;
     }
     
     [[PWGDPRManager sharedManager] setCommunicationEnabled:enable completion:^(NSError *error) {
-        if (error) {
-            if(errorCallback){
-                [errorCallback call:@[@{ @"error" : error.localizedDescription }] thisObject:nil];
-            }
-        }else{
-            if(successCallback){
-                [successCallback call:nil thisObject:nil];
-            }
-        }
+        callBackGDPR(error, errorCallback, successCallback);
     }];
 }
 
@@ -551,26 +557,18 @@ static __strong NSDictionary * gStartPushData = nil;
     }
     
     [[PWGDPRManager sharedManager] removeAllDeviceDataWithCompletion:^(NSError *error) {
-        if (error) {
-            if(errorCallback){
-                [errorCallback call:@[@{ @"error" : error.localizedDescription }] thisObject:nil];
-            }
-        }else{
-            if(successCallback){
-                [successCallback call:nil thisObject:nil];
-            }
-        }
+           callBackGDPR(error, errorCallback, successCallback);
     }];
 }
 
-- (void) showGDPRConsentUI:(id)unused
+- (void)showGDPRConsentUI:(id)unused
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[PWGDPRManager sharedManager] showGDPRConsentUI];
     });    
 }
 
-- (void) showGDPRDeletionUI:(id)unused
+- (void)showGDPRDeletionUI:(id)unused
 {
     dispatch_async(dispatch_get_main_queue(), ^{
        [[PWGDPRManager sharedManager] showGDPRDeletionUI];
