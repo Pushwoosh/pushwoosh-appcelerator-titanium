@@ -490,24 +490,26 @@ static __strong NSDictionary * gStartPushData = nil;
  Indicates availability of the GDPR compliance solution.
  */
 #pragma Public APIs
--(BOOL)isAvailable:(id)unused{
+- (BOOL)isAvailable:(id)unused
+{
     return [PWGDPRManager sharedManager].isAvailable;
 }
 
--(BOOL)isCommunicationEnabled:(id)unused{
+- (BOOL)isCommunicationEnabled:(id)unused
+{
     return [PWGDPRManager sharedManager].isCommunicationEnabled;
 }
 
--(BOOL)isDeviceDataRemoved:(id)unused{
+- (BOOL)isDeviceDataRemoved:(id)unused
+{
     return [PWGDPRManager sharedManager].isDeviceDataRemoved;
 }
 
 /**
  Enable/disable all communication with Pushwoosh. Enabled by default.
  */
-- (void)setCommunicationEnabled:(id)args {
-   // ENSURE_TYPE(args[0], NSString);
-    ENSURE_TYPE(args[1], KrollCallback);
+- (void)setCommunicationEnabled:(id)args
+{
     BOOL *enable = [args[0] boolValue];
     KrollCallback *successCallback = nil;
     KrollCallback *errorCallback = nil;
@@ -531,14 +533,11 @@ static __strong NSDictionary * gStartPushData = nil;
             }
         }
     }];
-    
 }
 
 /**
  Removes all device data from Pushwoosh and stops all interactions and communication permanently.
  */
-
-
 - (void)removeAllDeviceDataWithCompletion:(id)args
 {
     ENSURE_TYPE(args[0], KrollCallback);
@@ -564,14 +563,15 @@ static __strong NSDictionary * gStartPushData = nil;
     }];
 }
 
--(void) showGDPRConsentUI:(id)unused{
+- (void) showGDPRConsentUI:(id)unused
+{
     dispatch_async(dispatch_get_main_queue(), ^{
         [[PWGDPRManager sharedManager] showGDPRConsentUI];
-    });
-    
+    });    
 }
 
--(void) showGDPRDeletionUI:(id)unused{
+- (void) showGDPRDeletionUI:(id)unused
+{
     dispatch_async(dispatch_get_main_queue(), ^{
        [[PWGDPRManager sharedManager] showGDPRDeletionUI];
     });
