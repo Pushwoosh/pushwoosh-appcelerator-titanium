@@ -15,6 +15,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 import com.pushwoosh.Pushwoosh;
 import com.pushwoosh.badge.PushwooshBadge;
@@ -30,6 +31,8 @@ import com.pushwoosh.notification.LocalNotificationReceiver;
 import com.pushwoosh.notification.PushwooshNotificationSettings;
 import com.pushwoosh.tags.Tags;
 import com.pushwoosh.tags.TagsBundle;
+import com.pushwoosh.GDPRManager;
+import com.pushwoosh.exception.PushwooshException;
 
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollModule;
@@ -39,6 +42,7 @@ import org.appcelerator.kroll.common.TiConfig;
 import org.appcelerator.titanium.*;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 @Kroll.module(name = "Pushwoosh", id = "com.pushwoosh.module")
 public class PushnotificationsModule extends KrollModule {
@@ -261,6 +265,65 @@ public class PushnotificationsModule extends KrollModule {
 	@Kroll.method
 	public String getPushToken() {
 		return Pushwoosh.getInstance().getPushToken();
+	}
+
+	@Kroll.method
+	public void setCommunicationEnabled(boolean enable, final KrollFunction success, final KrollFunction error) {
+		GDPRManager.getInstance().setCommunicationEnabled(enable, new Callback<Void, PushwooshException>() {
+			@Override
+			public void process(@NonNull Result<Void, PushwooshException> result){
+				if (result.isSuccess()){
+					success.callAsync(getKrollObject(),new HashMap<String, Object>()); 
+				}
+				else if (result.getException() != null) {
+					HashMap resultMap = new HashMap();
+					resultMap.put("error",result.getException().getMessage());
+					error.callAsync(getKrollObject(), resultMap);
+				}
+		    }
+		});
+	}
+
+	@Kroll.method
+	public void removeAllDeviceData(final KrollFunction success, final KrollFunction error) {
+		GDPRManager.getInstance().removeAllDeviceData(new Callback<Void,PushwooshException>(){
+			@Override
+			public void process(@NonNull Result<Void, PushwooshException> result){
+				if (result.isSuccess()){
+					success.callAsync(getKrollObject(),new HashMap<String, Object>());
+				}
+				else if (result.getException() != null) {
+					HashMap resultMap = new HashMap();
+					resultMap.put("error",result.getException().getMessage());
+					error.callAsync(getKrollObject(), resultMap);
+				}
+		    }
+		});
+	}
+
+	@Kroll.method
+	public void showGDPRConsentUI() {
+		GDPRManager.getInstance().showGDPRConsentUI();
+	}
+
+	@Kroll.method
+	public void showGDPRDeletionUI() {
+		GDPRManager.getInstance().showGDPRDeletionUI();
+	}
+
+	@Kroll.method
+	public boolean isCommunicationEnabled() {
+		return GDPRManager.getInstance().isCommunicationEnabled();
+	}
+
+	@Kroll.method
+	public boolean isDeviceDataRemoved() {
+		return GDPRManager.getInstance().isDeviceDataRemoved();
+	}
+
+	@Kroll.method
+	public boolean isGDPRAvailable() {
+		return GDPRManager.getInstance().isAvailable();
 	}
 
 	@Kroll.method
