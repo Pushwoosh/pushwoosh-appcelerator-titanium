@@ -269,36 +269,12 @@ public class PushnotificationsModule extends KrollModule {
 
 	@Kroll.method
 	public void setCommunicationEnabled(boolean enable, final KrollFunction success, final KrollFunction error) {
-		GDPRManager.getInstance().setCommunicationEnabled(enable, new Callback<Void, PushwooshException>() {
-			@Override
-			public void process(@NonNull Result<Void, PushwooshException> result){
-				if (result.isSuccess()){
-					success.callAsync(getKrollObject(),new HashMap<String, Object>()); 
-				}
-				else if (result.getException() != null) {
-					HashMap resultMap = new HashMap();
-					resultMap.put("error",result.getException().getMessage());
-					error.callAsync(getKrollObject(), resultMap);
-				}
-		    }
-		});
+		GDPRManager.getInstance().setCommunicationEnabled(enable, wrapCallback(success, error));
 	}
 
 	@Kroll.method
 	public void removeAllDeviceData(final KrollFunction success, final KrollFunction error) {
-		GDPRManager.getInstance().removeAllDeviceData(new Callback<Void,PushwooshException>(){
-			@Override
-			public void process(@NonNull Result<Void, PushwooshException> result){
-				if (result.isSuccess()){
-					success.callAsync(getKrollObject(),new HashMap<String, Object>());
-				}
-				else if (result.getException() != null) {
-					HashMap resultMap = new HashMap();
-					resultMap.put("error",result.getException().getMessage());
-					error.callAsync(getKrollObject(), resultMap);
-				}
-		    }
-		});
+		GDPRManager.getInstance().removeAllDeviceData(wrapCallback(success, error));
 	}
 
 	@Kroll.method
@@ -334,6 +310,21 @@ public class PushnotificationsModule extends KrollModule {
         result.put("enabled", enabled);
         
 		return result;
+	}
+
+	private Callback<Void, PushwooshException> wrapCallback(final KrollFunction success, final KrollFunction error){
+		return new Callback<Void, PushwooshException>(){
+			@Override
+			public void process(@NonNull Result<Void, PushwooshException> result){
+				if (result.isSuccess()){
+					success.callAsync(getKrollObject(),new HashMap<String, Object>());
+				} else if (result.getException() != null) {
+					HashMap resultMap = new HashMap();
+					resultMap.put("error",result.getException().getMessage());
+					error.callAsync(getKrollObject(), resultMap);
+				}
+			}
+		};
 	}
 
 	private void notifyPushReceived(String messageData) {
