@@ -490,7 +490,7 @@ static __strong NSDictionary * gStartPushData = nil;
  Indicates availability of the GDPR compliance solution.
  */
 #pragma Public APIs
-- (BOOL)isAvailable:(id)unused
+- (BOOL)isGDPRAvailable:(id)unused
 {
     return [PWGDPRManager sharedManager].isAvailable;
 }
