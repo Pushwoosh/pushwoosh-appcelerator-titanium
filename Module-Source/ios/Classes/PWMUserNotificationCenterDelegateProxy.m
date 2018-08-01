@@ -37,7 +37,7 @@
 }
 
 - (BOOL)isPush:(UNNotification *)notification {
-    return [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]] || [notification.request.content.userInfo objectForKey:@"aps"];
+    return [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]] || [notification.request.content.userInfo objectForKey:@"aps"] || [notification.request.content.userInfo objectForKey:@"pw_push"];
 }
 
 - (BOOL)isPlotNotification:(UNNotification *)notification {
