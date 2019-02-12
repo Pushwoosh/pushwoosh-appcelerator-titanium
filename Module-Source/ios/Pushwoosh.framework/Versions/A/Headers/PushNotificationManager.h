@@ -12,7 +12,7 @@
 #import <UserNotifications/UserNotifications.h>
 #endif
 
-#define PUSHWOOSH_VERSION @"5.8.3"
+#define PUSHWOOSH_VERSION @"5.12.2"
 
 
 @class PushNotificationManager;
@@ -131,6 +131,20 @@ typedef void (^PushwooshErrorHandler)(NSError *error);
  */
 - (void)onInAppDisplayed:(NSString *)code __attribute__((deprecated("Use PWRichMediaPresentingDelegate protocol from PWRichMediaManager.h")));
 
+
+#if TARGET_OS_IPHONE
+/**
+ The method will be called on the delegate when the application is launched in response to the user's request to view in-app notification settings.
+ Add UNAuthorizationOptionProvidesAppNotificationSettings as an option in [PushNotificationManager pushManager].additionalAuthorizationOptions to add a button to inline notification settings view and the notification settings view in Settings.
+ The notification will be nil when opened from Settings.
+ 
+ @param pushManager PushNotificationManager instance
+ @param notification Source notification
+ */
+- (void)pushManager:(PushNotificationManager *)pushManager openSettingsForNotification:(UNNotification *)notification __IOS_AVAILABLE(12.0);
+
+#endif
+
 @end
 
 /**
@@ -187,6 +201,11 @@ typedef void (^PushwooshErrorHandler)(NSError *error);
  Show push notifications alert when push notification is received while the app is running, default is `YES`
  */
 @property (nonatomic, assign) BOOL showPushnotificationAlert;
+
+/**
+ Authorization options in addition to UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionCarPlay.
+ */
+@property (nonatomic) UNAuthorizationOptions additionalAuthorizationOptions __IOS_AVAILABLE(12.0);
 
 #endif
 
@@ -251,21 +270,27 @@ typedef void (^PushwooshErrorHandler)(NSError *error);
 - (id)initWithApplicationCode:(NSString *)appCode navController:(UIViewController *)navController appName:(NSString *)appName __attribute__((deprecated));
 
 /**
- Sends geolocation to the server for GeoFencing push technology. Called internally, please use `startLocationTracking` and `stopLocationTracking` functions.
- 
- @param location Location to be sent.
- */
-- (void)sendLocation:(CLLocation *)location;
-
-/**
  Start location tracking.
+ 
+ Deprecated. Use PushwooshGeozones framework.
  */
-- (void)startLocationTracking;
+- (void)startLocationTracking __attribute__((deprecated("Use PushwooshGeozones framework")));
 
 /**
  Stops location tracking
+ 
+ Deprecated. Use PushwooshGeozones framework.
  */
-- (void)stopLocationTracking;
+- (void)stopLocationTracking __attribute__((deprecated("Use PushwooshGeozones framework")));
+
+/**
+ Explicitly sends geolocation to the server for GeoFencing push technology. Also called internally, please use `startLocationTracking` and `stopLocationTracking` functions.
+ 
+ @param location Location to be sent.
+ 
+ Deprecated. Use PushwooshGeozones framework.
+ */
+- (void)sendLocation:(CLLocation *)location __attribute__((deprecated("Use PushwooshGeozones framework")));
 
 #endif
 

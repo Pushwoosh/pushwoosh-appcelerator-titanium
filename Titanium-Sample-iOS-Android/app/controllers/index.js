@@ -15,8 +15,8 @@ pushwoosh.onPushOpened(function(e) {
 });
 
 pushwoosh.initialize({ 
-    "application" : "4FC89B6D14A655.46488481",
-    "gcm_project" : "60756016005"
+    "application" : "80C0F-F7608",
+    "gcm_project" : "562785984945"
 });
 
 pushwoosh.registerForPushNotifications(

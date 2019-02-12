@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
-    <id>com.pushwoosh.demoapp</id>
+    <id>com.pushwoosh.testingapp</id>
     <name>PushwooshSample</name>
     <version>1.0</version>
     <publisher>not specified</publisher>
@@ -11,7 +11,7 @@
     <fullscreen>false</fullscreen>
     <navbar-hidden>false</navbar-hidden>
     <analytics>true</analytics>
-    <guid>2a83ab5f-db0d-4214-9888-73ff614a1c3e</guid>
+    <guid>e8806d9d-9b79-431f-9aaa-93634eb5c07b</guid>
     <property name="ti.ui.defaultunit" type="string">dp</property>
     <ios>
         <plist>
@@ -68,9 +68,9 @@
         <target device="iphone">true</target>
         <target device="mobileweb">false</target>
     </deployment-targets>
-    <sdk-version>6.0.0.GA</sdk-version>
+    <sdk-version>7.5.0.GA</sdk-version>
     <plugins>
         <plugin version="1.0">ti.alloy</plugin>
     </plugins>
-    <property name="appc-app-id" type="string">556d82978e9e1eb769582153</property>
+    <property name="appc-app-id" type="string">5c62a5e0aee4bb1ba39e310a</property>
 </ti:app>
