@@ -25,7 +25,6 @@ import com.pushwoosh.function.Callback;
 import com.pushwoosh.function.Result;
 import com.pushwoosh.inapp.PushwooshInApp;
 import com.pushwoosh.internal.utils.JsonUtils;
-import com.pushwoosh.location.PushwooshLocation;
 import com.pushwoosh.notification.LocalNotification;
 import com.pushwoosh.notification.LocalNotificationReceiver;
 import com.pushwoosh.notification.PushwooshNotificationSettings;
@@ -161,20 +160,6 @@ public class PushnotificationsModule extends KrollModule {
 		Log.d(LCAT, "unregister called");
 
 		Pushwoosh.getInstance().unregisterForPushNotifications();
-	}
-
-	@Kroll.method
-	public void startTrackingGeoPushes() {
-		Log.d(LCAT, "start tracking geo pushes called");
-
-		PushwooshLocation.startLocationTracking();
-	}
-
-	@Kroll.method
-	public void stopTrackingGeoPushes() {
-		Log.d(LCAT, "stop tracking geo pushes called");
-
-		PushwooshLocation.stopLocationTracking();
 	}
 
 	@Kroll.method

@@ -10,8 +10,7 @@
 #import "TiHost.h"
 #import "TiUtils.h"
 #import "TiApp.h"
-#import <Pushwoosh/Pushwoosh.h>
-#import <PushwooshGeozones/PWGeozonesManager.h>
+#import "Pushwoosh.h"
 #import <UserNotifications/UserNotifications.h>
 #import "PWMUserNotificationCenterDelegateProxy.h"
 
@@ -178,16 +177,6 @@ static __strong NSDictionary * gStartPushData = nil;
 - (void)unregister:(id)unused
 {
 	[[PushNotificationManager pushManager] unregisterForPushNotifications];
-}
-
-- (void)startTrackingGeoPushes:(id)unused
-{
-	[[PWGeozonesManager sharedManager] startLocationTracking];
-}
-
-- (void)stopTrackingGeoPushes:(id)unused
-{
-	[[PWGeozonesManager sharedManager] stopLocationTracking];
 }
 
 - (void)setTags:(id)args

@@ -28,9 +28,17 @@
 		24DE9E1211C5FE74003F90F6 /* ComPushwooshModuleModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DE9E1011C5FE74003F90F6 /* ComPushwooshModuleModuleAssets.m */; };
 		2A31C4DF1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A31C4DD1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.m */; };
 		2A31C4E01FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A31C4DE1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.h */; };
-		2AEC7CC52212EC4600691373 /* PushwooshGeozones.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AEC7CC42212EC4600691373 /* PushwooshGeozones.framework */; };
-		46F9C1281B0B6801004DCF4C /* Pushwoosh in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F9C1271B0B6801004DCF4C /* Pushwoosh */; };
-		46F9C12A1B0B681E004DCF4C /* Pushwoosh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F9C1291B0B681E004DCF4C /* Pushwoosh.framework */; };
+		2AEC7CD4221442A700691373 /* PWGDPRManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CC9221442A700691373 /* PWGDPRManager.h */; };
+		2AEC7CD5221442A700691373 /* PWInlineInAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CCA221442A700691373 /* PWInlineInAppView.h */; };
+		2AEC7CD6221442A700691373 /* Pushwoosh.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CCB221442A700691373 /* Pushwoosh.h */; };
+		2AEC7CD7221442A700691373 /* PWLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CCC221442A700691373 /* PWLog.h */; };
+		2AEC7CD8221442A700691373 /* PWRichMediaManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CCD221442A700691373 /* PWRichMediaManager.h */; };
+		2AEC7CD9221442A700691373 /* PWInbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CCE221442A700691373 /* PWInbox.h */; };
+		2AEC7CDA221442A700691373 /* PushNotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CCF221442A700691373 /* PushNotificationManager.h */; };
+		2AEC7CDB221442A700691373 /* libPushwoosh.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AEC7CD0221442A700691373 /* libPushwoosh.a */; };
+		2AEC7CDC221442A700691373 /* PWRichMediaStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CD1221442A700691373 /* PWRichMediaStyle.h */; };
+		2AEC7CDD221442A700691373 /* PWInAppManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CD2221442A700691373 /* PWInAppManager.h */; };
+		2AEC7CDE221442A700691373 /* PWAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AEC7CD3221442A700691373 /* PWAppDelegate.h */; };
 		AA747D9F0F9514B9006C5449 /* ComPushwooshModule_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* ComPushwooshModule_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -53,9 +61,17 @@
 		24DE9E1011C5FE74003F90F6 /* ComPushwooshModuleModuleAssets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComPushwooshModuleModuleAssets.m; path = Classes/ComPushwooshModuleModuleAssets.m; sourceTree = "<group>"; };
 		2A31C4DD1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PWMUserNotificationCenterDelegateProxy.m; path = Classes/PWMUserNotificationCenterDelegateProxy.m; sourceTree = "<group>"; };
 		2A31C4DE1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWMUserNotificationCenterDelegateProxy.h; path = Classes/PWMUserNotificationCenterDelegateProxy.h; sourceTree = "<group>"; };
-		2AEC7CC42212EC4600691373 /* PushwooshGeozones.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PushwooshGeozones.framework; sourceTree = "<group>"; };
-		46F9C1271B0B6801004DCF4C /* Pushwoosh */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = Pushwoosh; path = Pushwoosh.framework/Versions/A/Pushwoosh; sourceTree = "<group>"; };
-		46F9C1291B0B681E004DCF4C /* Pushwoosh.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Pushwoosh.framework; sourceTree = "<group>"; };
+		2AEC7CC9221442A700691373 /* PWGDPRManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWGDPRManager.h; path = Library/PWGDPRManager.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CCA221442A700691373 /* PWInlineInAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWInlineInAppView.h; path = Library/PWInlineInAppView.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CCB221442A700691373 /* Pushwoosh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pushwoosh.h; path = Library/Pushwoosh.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CCC221442A700691373 /* PWLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWLog.h; path = Library/PWLog.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CCD221442A700691373 /* PWRichMediaManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWRichMediaManager.h; path = Library/PWRichMediaManager.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CCE221442A700691373 /* PWInbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWInbox.h; path = Library/PWInbox.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CCF221442A700691373 /* PushNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PushNotificationManager.h; path = Library/PushNotificationManager.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CD0221442A700691373 /* libPushwoosh.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPushwoosh.a; path = Library/libPushwoosh.a; sourceTree = SOURCE_ROOT; };
+		2AEC7CD1221442A700691373 /* PWRichMediaStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWRichMediaStyle.h; path = Library/PWRichMediaStyle.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CD2221442A700691373 /* PWInAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWInAppManager.h; path = Library/PWInAppManager.h; sourceTree = SOURCE_ROOT; };
+		2AEC7CD3221442A700691373 /* PWAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWAppDelegate.h; path = Library/PWAppDelegate.h; sourceTree = SOURCE_ROOT; };
 		AA747D9E0F9514B9006C5449 /* ComPushwooshModule_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComPushwooshModule_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libComPushwooshModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libComPushwooshModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,10 +82,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AEC7CDB221442A700691373 /* libPushwoosh.a in Frameworks */,
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
-				2AEC7CC52212EC4600691373 /* PushwooshGeozones.framework in Frameworks */,
-				46F9C12A1B0B681E004DCF4C /* Pushwoosh.framework in Frameworks */,
-				46F9C1281B0B6801004DCF4C /* Pushwoosh in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,9 +101,7 @@
 		0867D691FE84028FC02AAC07 /* PushwooshModule */ = {
 			isa = PBXGroup;
 			children = (
-				2AEC7CC42212EC4600691373 /* PushwooshGeozones.framework */,
-				46F9C1291B0B681E004DCF4C /* Pushwoosh.framework */,
-				46F9C1271B0B6801004DCF4C /* Pushwoosh */,
+				2AEC7CC82214429100691373 /* Library */,
 				08FB77AEFE84172EC02AAC07 /* Classes */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
@@ -119,6 +131,25 @@
 			name = Classes;
 			sourceTree = "<group>";
 		};
+		2AEC7CC82214429100691373 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				2AEC7CD0221442A700691373 /* libPushwoosh.a */,
+				2AEC7CCF221442A700691373 /* PushNotificationManager.h */,
+				2AEC7CCB221442A700691373 /* Pushwoosh.h */,
+				2AEC7CD3221442A700691373 /* PWAppDelegate.h */,
+				2AEC7CC9221442A700691373 /* PWGDPRManager.h */,
+				2AEC7CD2221442A700691373 /* PWInAppManager.h */,
+				2AEC7CCE221442A700691373 /* PWInbox.h */,
+				2AEC7CCA221442A700691373 /* PWInlineInAppView.h */,
+				2AEC7CCC221442A700691373 /* PWLog.h */,
+				2AEC7CCD221442A700691373 /* PWRichMediaManager.h */,
+				2AEC7CD1221442A700691373 /* PWRichMediaStyle.h */,
+			);
+			name = Library;
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -135,9 +166,19 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AEC7CD9221442A700691373 /* PWInbox.h in Headers */,
 				2A31C4E01FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.h in Headers */,
+				2AEC7CD4221442A700691373 /* PWGDPRManager.h in Headers */,
 				AA747D9F0F9514B9006C5449 /* ComPushwooshModule_Prefix.pch in Headers */,
 				24DD6CF91134B3F500162E58 /* ComPushwooshModuleModule.h in Headers */,
+				2AEC7CD6221442A700691373 /* Pushwoosh.h in Headers */,
+				2AEC7CDD221442A700691373 /* PWInAppManager.h in Headers */,
+				2AEC7CDC221442A700691373 /* PWRichMediaStyle.h in Headers */,
+				2AEC7CD8221442A700691373 /* PWRichMediaManager.h in Headers */,
+				2AEC7CDA221442A700691373 /* PushNotificationManager.h in Headers */,
+				2AEC7CD5221442A700691373 /* PWInlineInAppView.h in Headers */,
+				2AEC7CD7221442A700691373 /* PWLog.h in Headers */,
+				2AEC7CDE221442A700691373 /* PWAppDelegate.h in Headers */,
 				24DE9E1111C5FE74003F90F6 /* ComPushwooshModuleModuleAssets.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -259,7 +300,10 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Pushwoosh.framework/Versions/A";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Pushwoosh.framework/Versions/A",
+					"$(PROJECT_DIR)$(LOCAL_LIBRARY_DIR)",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = (
 					"-DDEBUG",
@@ -304,7 +348,10 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Pushwoosh.framework/Versions/A";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Pushwoosh.framework/Versions/A",
+					"$(PROJECT_DIR)$(LOCAL_LIBRARY_DIR)",
+				);
 				OTHER_CFLAGS = "-DTI_POST_1_2";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = ComPushwooshModule;
