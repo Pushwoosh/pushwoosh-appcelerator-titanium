@@ -38,6 +38,9 @@
                 <!-- Set value to ALERT or BANNER to change notification appearance in foreground -->
                 <key>Pushwoosh_ALERT_TYPE</key>
                 <string>NONE</string>
+                <key>NSLocationWhenInUseUsageDescription</key>
+				<string>This demo uses location services for Pushwoosh Geozones and Beacons</string>
+
             </dict>
         </plist>
     </ios>
@@ -60,6 +63,8 @@
     <modules>
         <module platform="iphone">com.pushwoosh.module</module>
         <module platform="android">com.pushwoosh.module</module>
+        <module platform="android">com.pushwoosh.geozones</module>
+        <module platform="iphone">com.pushwoosh.geozones</module>
     </modules>
     <deployment-targets>
         <target device="android">true</target>

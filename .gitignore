@@ -2,6 +2,10 @@ Module-Source/android/build
 Module-Source/android/dist
 Module-Source/android/java-sources.txt
 Module-Source/android/libs/*
+Module-Geozones-Source/android/build
+Module-Geozones-Source/android/libs/*
+Module-Geozones-Source/android/java-sources.txt
+Module-Geozones-Source/android/dist
 Titanium-Sample-iOS-Android/build
 Titanium-Sample-iOS-Android/i18n
 Titanium-Sample-iOS-Android/platform
@@ -11,3 +15,8 @@ Module-Source/ios/PushwooshModule.xcodeproj/xcuserdata
 Module-Source/ios/PushwooshModule.xcodeproj/project.xcworkspace/*
 Module-Source/ios/metadata.json
 Module-Source/ios/com.pushwoosh.module-iphone-*.zip
+Module-Geozones-Source/ios/build
+Module-Geozones-Source/ios/PushwooshModule.xcodeproj/xcuserdata
+Module-Geozones-Source/ios/PushwooshModule.xcodeproj/project.xcworkspace/*
+Module-Geozones-Source/ios/metadata.json
+Module-Geozones-Source/ios/com.pushwoosh.module-iphone-*.zip

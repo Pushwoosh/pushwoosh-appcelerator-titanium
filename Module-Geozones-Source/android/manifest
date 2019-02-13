@@ -15,4 +15,4 @@ name: pushwoosh_geozones
 moduleid: com.pushwoosh.geozones
 guid: 2ff0d432-d163-48d6-9433-d0e3b10cc1bb
 platform: android
-minsdk: 7.5.0.GA
+minsdk: 7.0.0.GA

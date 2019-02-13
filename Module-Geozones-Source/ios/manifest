@@ -15,4 +15,4 @@ name: PushwooshGeozones
 moduleid: com.pushwoosh.geozones
 guid: 91863e7a-51b9-4e6b-a717-9955831b9c93
 platform: iphone
-minsdk: 7.5.0.GA
+minsdk: 7.0.0.GA

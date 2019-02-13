@@ -46,8 +46,9 @@ Ti.API.info("Notification settings: " + JSON.stringify(pushwoosh.getNotification
 //pushwoosh.setTags({"MyTag":["hello", "world"]});
 
 // Geopushes
-//pushwoosh.startTrackingGeoPushes();
-//pushwoosh.stopTrackingGeoPushes();
+// var pushwooshGeozones = require('com.pushwoosh.geozones');
+// pushwooshGeozones.startTrackingGeoPushes();
+// pushwooshGeozones.stopTrackingGeoPushes();
 
 // Inapp & Events
 //pushwoosh.setUserId("pushwooshid%42");
