@@ -175,26 +175,6 @@ pushwoosh.setTags({ "tag" : "value" });
 
 ---
 
-### startTrackingGeoPushes
-
-Starts geolocation based push notifications.  You need to configure Geozones in Pushwoosh Control panel.
-
-```js
-pushwoosh.startTrackingGeoPushes();
-```
-
----
-
-### stopTrackingGeoPushes
-
-Stops geolocation based push notifications.
-
-```js
-pushwoosh.stopTrackingGeoPushes();
-```
-
----
-
 ### setBadgeNumber
 
 Set application icon badge number.
@@ -309,3 +289,24 @@ Returns application notification settings as object with properties:
 var settings = pushwoosh.getNotificationSettings();
 ```
 
+# Pushwoosh Geozones Module #
+
+---
+
+### startTrackingGeoPushes
+
+Starts geolocation based push notifications.  You need to configure Geozones in Pushwoosh Control panel.
+
+```js
+pushwooshGeozones.startTrackingGeoPushes();
+```
+
+---
+
+### stopTrackingGeoPushes
+
+Stops geolocation based push notifications.
+
+```js
+pushwooshGeozones.stopTrackingGeoPushes();
+```
