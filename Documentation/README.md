@@ -42,8 +42,6 @@ pushwoosh.registerForPushNotifications(
 [getPushToken(success)](#getpushtoken)  
 [getHwid(success)](#gethwid)  
 [setTags(tags, success, fail)](#settags)  
-[startTrackingGeoPushes()](#starttrackinggeopushes)  
-[stopTrackingGeoPushes()](#stoptrackinggeopushes)  
 [setBadgeNumber(badge)](#setbadgenumber)  
 [getBadgeNumber()](#getbadgenumber)  
 [addBadgeNumber(badge)](#addbadgenumber)  
@@ -55,6 +53,8 @@ pushwoosh.registerForPushNotifications(
 [setMultiNotificationMode()](#setmultinotificationmode)  
 [setSimpleNotificationMode()](#setsimplenotificationmode)  
 [getNotificationSettings](#getnotificationsettings)  
+[startTrackingGeoPushes()](#starttrackinggeopushes)  
+[stopTrackingGeoPushes()](#stoptrackinggeopushes)  
 ---
 
 ### initialize
