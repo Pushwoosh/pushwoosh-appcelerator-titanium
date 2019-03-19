@@ -7,7 +7,7 @@ Pushwoosh Appcelerator Titanium Module
 
 ### Guide
 
-http://docs.pushwoosh.com/docs/appcelerator-titanium
+https://www.pushwoosh.com/platform-docs/pushwoosh-sdk/cross-platform-frameworks/appcelerator-titanium
 
 ### Documentation
 
