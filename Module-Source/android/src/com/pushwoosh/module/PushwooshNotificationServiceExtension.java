@@ -15,6 +15,7 @@ import org.appcelerator.kroll.common.TiConfig;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.pushwoosh.Pushwoosh;
 import com.pushwoosh.notification.NotificationServiceExtension;
@@ -44,10 +45,14 @@ public class PushwooshNotificationServiceExtension extends NotificationServiceEx
 			/*
 				Bugfix of task PUSH-19046
 			 */
-			try {
-				Method getLaunchIntentMethod = activity.getClass().getMethod("getLaunchIntent", (Class<?>[]) null);
-				launchIntent = (Intent) getLaunchIntentMethod.invoke(activity);
-			} catch (Exception e) {
+			if (!hasCorrectIntent(activity)) {
+				try {
+					Method getLaunchIntentMethod = activity.getClass().getMethod("getLaunchIntent", (Class<?>[]) null);
+					launchIntent = (Intent) getLaunchIntentMethod.invoke(activity);
+				} catch (Exception e) {
+					launchIntent = activity.getIntent();
+				}
+			} else {
 				launchIntent = activity.getIntent();
 			}
 			/*
@@ -75,5 +80,14 @@ public class PushwooshNotificationServiceExtension extends NotificationServiceEx
 	protected void onMessageOpened(PushMessage pushMessage) {
 		super.onMessageOpened(pushMessage);
 		PushnotificationsModule.onPushOpened(pushMessage.toJson().toString());
+	}
+
+	private boolean hasCorrectIntent(Activity activity) {
+		if (activity.getIntent() == null || activity.getIntent().getComponent() == null) {
+			return false;
+		}
+		String activityClassName = activity.getClass().getName();
+		String destinationActivityClassName = activity.getIntent().getComponent().getClassName();
+		return TextUtils.equals(activityClassName, destinationActivityClassName);
 	}
 }
