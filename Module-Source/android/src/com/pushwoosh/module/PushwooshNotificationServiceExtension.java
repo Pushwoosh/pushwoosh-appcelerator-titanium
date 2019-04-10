@@ -20,6 +20,8 @@ import com.pushwoosh.Pushwoosh;
 import com.pushwoosh.notification.NotificationServiceExtension;
 import com.pushwoosh.notification.PushMessage;
 
+import java.lang.reflect.Method;
+
 public class PushwooshNotificationServiceExtension extends NotificationServiceExtension {
 
 	@Override
@@ -39,7 +41,20 @@ public class PushwooshNotificationServiceExtension extends NotificationServiceEx
 
 		Intent launchIntent = null;
 		if(activity != null) {
-			launchIntent = activity.getIntent();
+			/*
+				Bugfix of task PUSH-19046
+			 */
+			try {
+				Method getLaunchIntentMethod = activity.getClass().getMethod("getLaunchIntent", (Class<?>[]) null);
+				launchIntent = (Intent) getLaunchIntentMethod.invoke(activity);
+			} catch (Exception e) {
+				launchIntent = activity.getIntent();
+			}
+			/*
+				End of bugfix of task PUSH-19046
+				the line should be there:
+				launchIntent = activity.getIntent();
+			 */
 		} else {
 			launchIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
 			if(launchIntent == null){
