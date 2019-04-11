@@ -15,10 +15,13 @@ import org.appcelerator.kroll.common.TiConfig;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.pushwoosh.Pushwoosh;
 import com.pushwoosh.notification.NotificationServiceExtension;
 import com.pushwoosh.notification.PushMessage;
+
+import java.lang.reflect.Method;
 
 public class PushwooshNotificationServiceExtension extends NotificationServiceExtension {
 
@@ -40,6 +43,15 @@ public class PushwooshNotificationServiceExtension extends NotificationServiceEx
 		Intent launchIntent = null;
 		if(activity != null) {
 			launchIntent = activity.getIntent();
+			
+			//	Bugfix of task PUSH-19046
+			if (!hasCorrectIntent(activity)) {
+				try {
+					Method getLaunchIntentMethod = activity.getClass().getMethod("getLaunchIntent", (Class<?>[]) null);
+					launchIntent = (Intent) getLaunchIntentMethod.invoke(activity);
+				} catch (Exception e) { }
+			} 
+			//	End of bugfix of task PUSH-19046
 		} else {
 			launchIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
 			if(launchIntent == null){
@@ -60,5 +72,14 @@ public class PushwooshNotificationServiceExtension extends NotificationServiceEx
 	protected void onMessageOpened(PushMessage pushMessage) {
 		super.onMessageOpened(pushMessage);
 		PushnotificationsModule.onPushOpened(pushMessage.toJson().toString());
+	}
+
+	private boolean hasCorrectIntent(Activity activity) {
+		if (activity.getIntent() == null || activity.getIntent().getComponent() == null) {
+			return false;
+		}
+		String activityClassName = activity.getClass().getName();
+		String destinationActivityClassName = activity.getIntent().getComponent().getClassName();
+		return TextUtils.equals(activityClassName, destinationActivityClassName);
 	}
 }
