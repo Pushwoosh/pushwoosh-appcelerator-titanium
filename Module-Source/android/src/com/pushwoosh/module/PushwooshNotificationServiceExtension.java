@@ -42,24 +42,16 @@ public class PushwooshNotificationServiceExtension extends NotificationServiceEx
 
 		Intent launchIntent = null;
 		if(activity != null) {
-			/*
-				Bugfix of task PUSH-19046
-			 */
+			launchIntent = activity.getIntent();
+			
+			//	Bugfix of task PUSH-19046
 			if (!hasCorrectIntent(activity)) {
 				try {
 					Method getLaunchIntentMethod = activity.getClass().getMethod("getLaunchIntent", (Class<?>[]) null);
 					launchIntent = (Intent) getLaunchIntentMethod.invoke(activity);
-				} catch (Exception e) {
-					launchIntent = activity.getIntent();
-				}
-			} else {
-				launchIntent = activity.getIntent();
-			}
-			/*
-				End of bugfix of task PUSH-19046
-				the line should be there:
-				launchIntent = activity.getIntent();
-			 */
+				} catch (Exception e) { }
+			} 
+			//	End of bugfix of task PUSH-19046
 		} else {
 			launchIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
 			if(launchIntent == null){
