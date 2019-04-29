@@ -227,7 +227,7 @@ pushwoosh.postEvent("event", { "attribute" : "value" });
 
 ### scheduleLocalNotification
 
-Android only, Creates local notification.
+Creates local notification.
 
 ```js
 var notificationId = pushwoosh.scheduleLocalNotification("Your pumpkins are ready!", 30);
@@ -237,7 +237,7 @@ var notificationId = pushwoosh.scheduleLocalNotification("Your pumpkins are read
 
 ### clearLocalNotification
 
-Android only, Clears pending local notification created by [scheduleLocalNotification](#schedulelocalnotification).
+Clears pending local notification created by [scheduleLocalNotification](#schedulelocalnotification).
 
 ```js
 var notificationId = pushwoosh.scheduleLocalNotification("Your pumpkins are ready!", 30);
@@ -248,7 +248,7 @@ pushwoosh.clearLocalNotification(notificationId);
 
 ### clearLocalNotifications
 
-Android only, Clears all pending local notifications created by [scheduleLocalNotification](#schedulelocalnotification).
+Clears all pending local notifications created by [scheduleLocalNotification](#schedulelocalnotification).
 
 ```js
 pushwoosh.clearLocalNotifications();
