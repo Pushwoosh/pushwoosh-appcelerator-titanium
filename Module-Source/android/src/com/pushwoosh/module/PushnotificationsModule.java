@@ -98,7 +98,7 @@ public class PushnotificationsModule extends KrollModule {
 		initialized.set(true);
 
 		String pushwooshAppId = (String) options.get("application");
-		String googleProjectId = (String) options.get("gcm_project");
+		String googleProjectId = (String) options.get("fcm_sender_id");
 
 		// dispatch saved start notification
 		String startPush = startPushData.getAndSet(null);
