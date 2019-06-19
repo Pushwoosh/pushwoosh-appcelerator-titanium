@@ -15,8 +15,8 @@ pushwoosh.onPushOpened(function(e) {
 });
 
 pushwoosh.initialize({ 
-    "application" : "80C0F-F7608",
-    "gcm_project" : "562785984945"
+    "application" : "11C10-EF18D",
+    "fcm_sender_id" : "562785984945"
 });
 
 pushwoosh.registerForPushNotifications(
