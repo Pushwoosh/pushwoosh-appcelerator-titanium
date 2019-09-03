@@ -19,6 +19,20 @@ function init(logger, config, cli, appc) {
 					}
 				}); 
 			}			
+		},
+		post: function(data) {
+			const fs = require('fs');
+			var manifestData = fs.readFileSync(data.args[0], 'utf8');
+			manifestData = manifestData.replace(/.*internal\.AnalyticsConnectorRegistrar.*/g, '');
+			if (manifestData.indexOf('com.google.firebase.iid.Registrar') == -1) {
+				var regex = RegExp('android:name="com.google.firebase.components.ComponentDiscoveryService"[\\s\\S]*?>','g');
+				if (regex.exec(manifestData) != null) {
+					manifestData = manifestData.substring(0, regex.lastIndex) + 
+					"\n<meta-data android:name=\"com.google.firebase.components:com.google.firebase.iid.Registrar\" android:value=\"com.google.firebase.components.ComponentRegistrar\" />" +
+					manifestData.substring(regex.lastIndex, manifestData.length);
+				}
+			}
+			fs.writeFileSync(data.args[0], manifestData, 'utf8');
 		}
 	});
 	
