@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.pushwoosh.Pushwoosh;
 import com.pushwoosh.badge.PushwooshBadge;
@@ -98,7 +99,12 @@ public class PushnotificationsModule extends KrollModule {
 		initialized.set(true);
 
 		String pushwooshAppId = (String) options.get("application");
-		String googleProjectId = (String) options.get("gcm_project");
+		String googleProjectId = (String) options.get("fcm_sender_id");
+
+		// PUSH-20354 backwards compatibility
+		if (TextUtils.isEmpty(googleProjectId)) {
+			googleProjectId = (String) options.get("gcm_project");
+		}
 
 		// dispatch saved start notification
 		String startPush = startPushData.getAndSet(null);
