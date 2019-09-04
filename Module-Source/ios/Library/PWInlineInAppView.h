@@ -1,15 +1,26 @@
 //
 //  PWInlineInAppView.h
-//  Pushwoosh
-//
-//  Created by Fectum on 22/10/2018.
-//  Copyright © 2018 Pushwoosh. All rights reserved.
+//  Pushwoosh SDK
+//  (c) Pushwoosh 2018
 //
 
 #import <UIKit/UIKit.h>
 
+@class PWInlineInAppView;
+
+@protocol PWInlineInAppViewDelegate <NSObject>
+
+@optional
+- (void)inlineInAppDidLoadInView:(PWInlineInAppView *)inAppView;
+- (void)didCloseInlineInAppView:(PWInlineInAppView *)inAppView;
+- (void)didChangeSizeOfInlineInAppView:(PWInlineInAppView *)inAppView;
+
+@end
+
 @interface PWInlineInAppView : UIView
 
 @property (nonatomic) IBInspectable NSString *identifier;
+
+@property (nonatomic, weak) id <PWInlineInAppViewDelegate> delegate;
 
 @end
