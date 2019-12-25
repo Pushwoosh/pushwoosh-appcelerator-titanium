@@ -6,6 +6,7 @@ exports.init = init;
 
 function init(logger, config, cli, appc) {
 	var dstPath = null;
+	var stringsPath = null;
 	var fileContent = null;
 	cli.on("build.android.writeAndroidManifest", {
 		pre: function(data) {
@@ -51,6 +52,7 @@ function init(logger, config, cli, appc) {
 				
 				if (!fs.existsSync(dstPath)) fs.mkdirSync(dstPath); 
 				dstPath += "/values";
+				stringsPath = cli.argv['project-dir'] + "/app/platform/android/res/values/strings.xml";
 				if (!fs.existsSync(dstPath)) fs.mkdirSync(dstPath); //create res/values if not exists
 				dstPath += "/googleservices.xml";
 				
@@ -89,7 +91,19 @@ function init(logger, config, cli, appc) {
 				append("google_api_key", query(client, "api_key.0.current_key"));
 				append("google_crash_reporting_api_key", query(client, "api_key.0.current_key"));
 				
-				append("google_app_id", query(client, "client_info.mobilesdk_app_id"));
+				try {
+					if (fs.existsSync(stringsPath)) {
+						fs.readFile(stringsPath, function (err, data) {
+							if (data.indexOf('google_app_id') <= 0 ) {
+								append("google_app_id", query(client, "client_info.mobilesdk_app_id"));
+							}
+						  });
+					} else {
+						append("google_app_id", query(client, "client_info.mobilesdk_app_id"));
+					}
+				} catch(err) {
+					append("google_app_id", query(client, "client_info.mobilesdk_app_id"));  
+				}
 				
 				var oauth_clients_list = client["oauth_client"];
 				
