@@ -10,9 +10,11 @@ function init(logger, config, cli, appc) {
 	var fileContent = null;
 	cli.on("build.android.writeAndroidManifest", {
 		pre: function(data) {
-			if (dstPath != null && fileContent != null) {
+			if (compareVersionNumbers(data.ctx.titaniumSdkVersion, "9.0.0") > 0 || compareVersionNumbers(data.ctx.titaniumSdkVersion, "9.0.0") === 0) {
+				return;
+			}
+			if (dstPath != null && fileContent != null) {	
 				var fs = require('fs');
-										
 				if (fs.existsSync(dstPath)) fs.unlinkSync(dstPath);
 				fs.writeFile(dstPath, fileContent, function(err) {
 					if(err) {
@@ -22,6 +24,9 @@ function init(logger, config, cli, appc) {
 			}			
 		},
 		post: function(data) {
+			if (compareVersionNumbers(data.ctx.titaniumSdkVersion, "9.0.0") > 0 || compareVersionNumbers(data.ctx.titaniumSdkVersion, "9.0.0") === 0) {
+				return;
+			}
 			const fs = require('fs');
 			var manifestData = fs.readFileSync(data.args[0], 'utf8');
 			manifestData = manifestData.replace(/.*internal\.AnalyticsConnectorRegistrar.*/g, '');
@@ -39,6 +44,15 @@ function init(logger, config, cli, appc) {
 	
 	cli.on('build.android.copyResource', {
 		pre: function(data) {
+			var fs = require('fs');
+			if (compareVersionNumbers(data.ctx.titaniumSdkVersion, "9.0.0") > 0 || compareVersionNumbers(data.ctx.titaniumSdkVersion, "9.0.0") === 0) {
+				var livedataLibPath = cli.argv['project-dir'] + "/build/android/lib.com.pushwoosh.module/libs/livedata-1.1.1.aar";
+				try {
+					fs.unlinkSync(livedataLibPath);
+				  } catch (err) {
+				  }
+				return;
+			}
 			if (data.args.length > 0 && data.args[0].endsWith('platform/android/google-services.json')) {
 				logger.info(data.args);
 				data.fn = null; //do not copy json to build dir
@@ -48,7 +62,6 @@ function init(logger, config, cli, appc) {
 				components.pop();
 				dstPath = components.join("/") + "/res";
 				
-				var fs = require('fs');
 				
 				if (!fs.existsSync(dstPath)) fs.mkdirSync(dstPath); 
 				dstPath += "/values";
@@ -135,4 +148,47 @@ function init(logger, config, cli, appc) {
 			}
 		}
 	});
+}
+
+
+function compareVersionNumbers(v1, v2) {
+	var v1parts = v1.split('.');
+	var v2parts = v2.split('.');
+
+	function validateParts(parts) {
+		for (var i = 0; i < parts.length; ++i) {
+			if (!isPositiveInteger(parts[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	if (!validateParts(v1parts) || !validateParts(v2parts)) {
+		return NaN;
+	}
+
+	for (var i = 0; i < v1parts.length; ++i) {
+		if (v2parts.length === i) {
+			return 1;
+		}
+
+		if (v1parts[i] === v2parts[i]) {
+			continue;
+		}
+		if (v1parts[i] > v2parts[i]) {
+			return 1;
+		}
+		return -1;
+	}
+
+	if (v1parts.length != v2parts.length) {
+		return -1;
+	}
+
+	return 0;
+}
+
+function isPositiveInteger(x) {
+    // http://stackoverflow.com/a/1019526/11236
+    return /^\d+$/.test(x);
 }
