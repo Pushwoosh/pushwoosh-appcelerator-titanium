@@ -1,0 +1,11 @@
+ext {
+    pushwoosh = "6.0.6"
+}
+
+dependencies {
+    implementation "com.pushwoosh:pushwoosh:${pushwoosh}"
+    implementation "com.pushwoosh:pushwoosh-firebase:${pushwoosh}"
+    implementation "com.pushwoosh:pushwoosh-amazon:${pushwoosh}"
+    implementation "com.pushwoosh:pushwoosh-badge:${pushwoosh}"
+    implementation "com.google.firebase:firebase-messaging:(+,20.2.2)"
+}
