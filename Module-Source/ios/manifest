@@ -15,4 +15,4 @@ name: PushwooshModule
 moduleid: com.pushwoosh.module
 guid: 52006c31-539c-4559-829c-b705e760e977
 platform: iphone
-minsdk: 3.0.0.GA
+minsdk: 9.0.0.GA
