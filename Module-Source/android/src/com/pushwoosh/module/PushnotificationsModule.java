@@ -186,7 +186,7 @@ public class PushnotificationsModule extends KrollModule {
 						e.printStackTrace();
 					}
 				} else {
-					HashMap<String, Object> resultMap = new HashMap();
+					HashMap<String, Object> resultMap = new HashMap<>();
 					error.callAsync(getKrollObject(), resultMap);
 				}
 			}
@@ -294,7 +294,7 @@ public class PushnotificationsModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public Map getNotificationSettings() {
+	public Map<String, Boolean> getNotificationSettings() {
 		boolean enabled = PushwooshNotificationSettings.areNotificationsEnabled();
         
         Map<String, Boolean> result = new HashMap<>();
@@ -310,7 +310,7 @@ public class PushnotificationsModule extends KrollModule {
 				if (result.isSuccess()){
 					success.callAsync(getKrollObject(),new HashMap<String, Object>());
 				} else if (result.getException() != null) {
-					HashMap<String, String> resultMap = new HashMap();
+					HashMap<String, String> resultMap = new HashMap<>();
 					resultMap.put("error", result.getException().getMessage());
 					error.callAsync(getKrollObject(), resultMap);
 				}
@@ -354,7 +354,7 @@ public class PushnotificationsModule extends KrollModule {
 		mainHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				HashMap<String, String> data = new HashMap();
+				HashMap<String, String> data = new HashMap<>();
 				data.put("registrationId", registrationId);
 
 				KrollFunction callback = registrationSuccessCallback.getAndSet(null);
@@ -369,7 +369,7 @@ public class PushnotificationsModule extends KrollModule {
 		mainHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				HashMap<String, String> data = new HashMap();
+				HashMap<String, String> data = new HashMap<>();
 				data.put("error", error);
 
 				KrollFunction callback = registrationErrorCallback.getAndSet(null);
