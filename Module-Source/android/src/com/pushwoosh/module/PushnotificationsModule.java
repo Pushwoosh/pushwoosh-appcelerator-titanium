@@ -93,7 +93,7 @@ public class PushnotificationsModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void initialize(HashMap<String, Object> options) {
+	public void initialize(HashMap options) {
 		Log.d(LCAT, "initialize called");
 
 		initialized.set(true);
@@ -129,7 +129,7 @@ public class PushnotificationsModule extends KrollModule {
 
 	@Deprecated
 	@Kroll.method
-	public void pushNotificationsRegister(HashMap<String, Object> options) {
+	public void pushNotificationsRegister(HashMap options) {
 		Log.w(LCAT, "<pushNotificationsRegister> method is deprecated! Use <initialize> and <register> instead");
 
 		KrollFunction success = (KrollFunction) options.get("success");
@@ -169,7 +169,7 @@ public class PushnotificationsModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void setTags(HashMap<String, Object> params) {
+	public void setTags(HashMap params) {
 		Pushwoosh.getInstance().sendTags(Tags.fromJson(JsonUtils.mapToJson(params)), null);
 	}
 
@@ -294,7 +294,7 @@ public class PushnotificationsModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public Map<String, Boolean> getNotificationSettings() {
+	public Map getNotificationSettings() {
 		boolean enabled = PushwooshNotificationSettings.areNotificationsEnabled();
         
         Map<String, Boolean> result = new HashMap<>();
@@ -380,7 +380,7 @@ public class PushnotificationsModule extends KrollModule {
 		});
 	}
 
-	private HashMap<String, Object> convertMessageData(String messageData) {
+	private HashMap convertMessageData(String messageData) {
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		try {
 			JSONObject json = new JSONObject(messageData);
