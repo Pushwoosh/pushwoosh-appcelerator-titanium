@@ -11,7 +11,7 @@
     <fullscreen>false</fullscreen>
     <navbar-hidden>false</navbar-hidden>
     <analytics>true</analytics>
-    <guid>e8806d9d-9b79-431f-9aaa-93634eb5c07b</guid>
+    <guid>56dde67d-3065-4492-9000-17e0b2be3ba1</guid>
     <property name="ti.ui.defaultunit" type="string">dp</property>
     <ios>
         <plist>
@@ -39,8 +39,7 @@
                 <key>Pushwoosh_ALERT_TYPE</key>
                 <string>NONE</string>
                 <key>NSLocationWhenInUseUsageDescription</key>
-				<string>This demo uses location services for Pushwoosh Geozones and Beacons</string>
-
+                <string>This demo uses location services for Pushwoosh Geozones and Beacons</string>
             </dict>
         </plist>
     </ios>
@@ -73,9 +72,9 @@
         <target device="iphone">true</target>
         <target device="mobileweb">false</target>
     </deployment-targets>
-    <sdk-version>7.5.0.GA</sdk-version>
+    <sdk-version>9.0.1.GA</sdk-version>
     <plugins>
         <plugin version="1.0">ti.alloy</plugin>
     </plugins>
-    <property name="appc-app-id" type="string">5c62a5e0aee4bb1ba39e310a</property>
+    <property name="appc-app-id" type="string">5fcbad36c5bffe57d73cc855</property>
 </ti:app>
