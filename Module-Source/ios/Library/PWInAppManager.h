@@ -5,6 +5,9 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#if TARGET_OS_IOS
+
 #import <WebKit/WebKit.h>
 /**
  `PWJavaScriptInterface` protocol is a representation of Javascript object that can be added at runtime into In-App Message HTML page
@@ -77,6 +80,8 @@
 
 @end
 
+#endif
+
 
 /*
  `PWInAppManager` class offers access to the singleton-instance of the inapp messages manager responsible for sending events and managing inapp message notifications.
@@ -85,16 +90,41 @@
 
 + (instancetype)sharedManager;
 
+#if TARGET_OS_IOS || TARGET_OS_OSX
 /**
  Resets capping of the Pushwoosh out-of-the-box In-App solutions.
  */
 - (void)resetBusinessCasesFrequencyCapping;
 
+#endif
 /**
  Set User indentifier. This could be Facebook ID, username or email, or any other user ID.
  This allows data and events to be matched across multiple user devices.
  */
 - (void)setUserId:(NSString *)userId;
+
+/**
+ Set User indentifier. This could be Facebook ID, username or email, or any other user ID.
+ This allows data and events to be matched across multiple user devices.
+ If setUser succeeds competion is called with nil argument. If setUser fails completion is called with error.
+ */
+- (void)setUserId:(NSString *)userId completion:(void(^)(NSError * error))completion;
+
+/**
+ Set User indentifier. This could be Facebook ID, username or email, or any other user ID.
+ This allows data and events to be matched across multiple user devices.
+
+ @param userId user identifier
+ @param emails user's emails array
+ */
+- (void)setUser:(NSString *)userId emails:(NSArray *)emails completion:(void(^)(NSError * error))completion;
+
+/**
+ Register emails list associated to the current user.
+ 
+ @param emails user's emails array
+ */
+- (void)setEmails:(NSArray *)emails completion:(void(^)(NSError * error))completion;
 
 /**
  Move all events from oldUserId to newUserId if doMerge is true. If doMerge is false all events for oldUserId are removed.
@@ -126,7 +156,7 @@
  */
 - (void)postEvent:(NSString *)event withAttributes:(NSDictionary *)attributes;
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
 
 /**
  Adds javascript interface for In-App Messages. Interface will be accessible from javascript as object with specified `name` and functions defined in `interface` class.

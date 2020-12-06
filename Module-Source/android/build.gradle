@@ -1,5 +1,5 @@
 ext {
-    pushwoosh = "6.0.6"
+    pushwoosh = "6.1.0"
 }
 
 dependencies {
