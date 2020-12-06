@@ -11,6 +11,8 @@
 #import "TiUtils.h"
 #import "TiApp.h"
 #import "Pushwoosh.h"
+#import "PWInAppManager.h"
+#import "PWGDPRManager.h"
 #import <UserNotifications/UserNotifications.h>
 #import "PWMUserNotificationCenterDelegateProxy.h"
 

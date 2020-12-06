@@ -2,9 +2,9 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 5.20.1
+version: 5.21.0
 apiversion: 4
-architectures: arm64-v8a armeabi-v7a x86
+architectures: arm64-v8a armeabi-v7a x86 x86_64
 description: pushwoosh_geozones
 author: Pushwoosh
 license: MIT
@@ -15,4 +15,4 @@ name: pushwoosh_geozones
 moduleid: com.pushwoosh.geozones
 guid: 2ff0d432-d163-48d6-9433-d0e3b10cc1bb
 platform: android
-minsdk: 7.0.0.GA
+minsdk: 9.0.1.GA

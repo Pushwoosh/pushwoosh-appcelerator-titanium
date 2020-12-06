@@ -2,7 +2,7 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 5.20.1
+version: 5.21.0
 apiversion: 2
 architectures: armv7 arm64 i386 x86_64
 description: PushwooshGeozones
@@ -15,4 +15,4 @@ name: PushwooshGeozones
 moduleid: com.pushwoosh.geozones
 guid: 91863e7a-51b9-4e6b-a717-9955831b9c93
 platform: iphone
-minsdk: 7.0.0.GA
+minsdk: 9.0.1.GA
