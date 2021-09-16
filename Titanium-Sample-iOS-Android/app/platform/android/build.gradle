@@ -1,0 +1,5 @@
+if (plugins.hasPlugin('com.google.gms.google-services')) {
+    googleServices {
+       disableVersionCheck = true
+    }
+}
