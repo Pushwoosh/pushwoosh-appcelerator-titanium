@@ -36,6 +36,15 @@ Ti.API.info('Pushwoosh hwid: ' + pushwoosh.getHwid());
 
 Ti.API.info("Notification settings: " + JSON.stringify(pushwoosh.getNotificationSettings()));
 
+//start and stop location tracking
+var pushwooshGeozones = require('com.pushwoosh.geozones');
+function doClickEnableGeozones(e){
+  pushwooshGeozones.startTrackingGeoPushes();
+};
+function doClickDisableGeozones(e){
+  pushwooshGeozones.stopTrackingGeoPushes();
+};
+
 // Application icon badges
 //pushwoosh.setBadgeNumber(5);
 //pushwoosh.addBadgeNumber(3);
@@ -45,10 +54,10 @@ Ti.API.info("Notification settings: " + JSON.stringify(pushwoosh.getNotification
 //pushwoosh.setTags({deviceName:"hello", deviceId:10});
 //pushwoosh.setTags({"MyTag":["hello", "world"]});
 
-// Geopushes
-// var pushwooshGeozones = require('com.pushwoosh.geozones');
-// pushwooshGeozones.startTrackingGeoPushes();
-// pushwooshGeozones.stopTrackingGeoPushes();
+// // Geopushes
+//  var pushwooshGeozones = require('com.pushwoosh.geozones');
+//  pushwooshGeozones.startTrackingGeoPushes();
+//  pushwooshGeozones.stopTrackingGeoPushes();
 
 // Inapp & Events
 //pushwoosh.setUserId("pushwooshid%42");
