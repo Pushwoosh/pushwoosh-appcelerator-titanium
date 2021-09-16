@@ -7,5 +7,5 @@ dependencies {
     implementation "com.pushwoosh:pushwoosh-firebase:${pushwoosh}"
     implementation "com.pushwoosh:pushwoosh-amazon:${pushwoosh}"
     implementation "com.pushwoosh:pushwoosh-badge:${pushwoosh}"
-    implementation "com.google.firebase:firebase-messaging:(+,20.2.2)"
+    implementation "com.google.firebase:firebase-messaging:(+,20.0.99]"
 }
