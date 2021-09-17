@@ -8,6 +8,10 @@
 			<Label id="pushMessage"></Label>
 			<Label>Push data: </Label> 
 			<Label id="pushData"></Label>
+            <Button id="enableGeozonesButton" onClick="doClickEnableGeozones" title="startLocationTracking"
+                    top="10" width="300" height="50" />
+            <Button id="disableGeozonesButton" onClick="doClickDisableGeozones" title="stopLocationTracking"
+                    top="10" width="300" height="50" />
 		</View>
 	</Window>
 </Alloy>
