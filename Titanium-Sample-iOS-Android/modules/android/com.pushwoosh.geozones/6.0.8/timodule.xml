@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ti:module xmlns:ti="http://ti.appcelerator.org" xmlns:android="http://schemas.android.com/apk/res/android">
-	<android xmlns:android="http://schemas.android.com/apk/res/android">
-	</android>
-    <modules>
-        <module platform="android">com.pushwoosh.module</module>
-    </modules>
-</ti:module>
