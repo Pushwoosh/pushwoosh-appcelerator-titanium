@@ -19,11 +19,13 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.pushwoosh.Pushwoosh;
+import com.pushwoosh.RegisterForPushNotificationsResultData;
 import com.pushwoosh.badge.PushwooshBadge;
 import com.pushwoosh.exception.GetTagsException;
 import com.pushwoosh.exception.RegisterForPushNotificationsException;
 import com.pushwoosh.function.Callback;
 import com.pushwoosh.function.Result;
+import com.pushwoosh.inapp.InAppManager;
 import com.pushwoosh.inapp.PushwooshInApp;
 import com.pushwoosh.internal.utils.JsonUtils;
 import com.pushwoosh.notification.LocalNotification;
@@ -149,11 +151,11 @@ public class PushnotificationsModule extends KrollModule {
 		registrationSuccessCallback.set(success);
 		registrationErrorCallback.set(error);
 
-		Pushwoosh.getInstance().registerForPushNotifications(new Callback<String, RegisterForPushNotificationsException>() {
+		Pushwoosh.getInstance().registerForPushNotifications(new Callback<RegisterForPushNotificationsResultData, RegisterForPushNotificationsException>() {
 			@Override
-			public void process(Result<String, RegisterForPushNotificationsException> result) {
+			public void process(@NonNull Result<RegisterForPushNotificationsResultData, RegisterForPushNotificationsException> result) {
 				if (result.isSuccess()) {
-					onRegistrationSucceed(result.getData());
+					onRegistrationSucceed(result.getData().getToken());
 				} else if (result.getException() != null) {
 					onRegistrationFailed(result.getException().getLocalizedMessage());
 				}
@@ -170,7 +172,7 @@ public class PushnotificationsModule extends KrollModule {
 
 	@Kroll.method
 	public void setTags(HashMap params) {
-		Pushwoosh.getInstance().sendTags(Tags.fromJson(JsonUtils.mapToJson(params)), null);
+		Pushwoosh.getInstance().setTags(Tags.fromJson(JsonUtils.mapToJson(params)), null);
 	}
 
 	@Kroll.method
@@ -240,12 +242,12 @@ public class PushnotificationsModule extends KrollModule {
 
 	@Kroll.method
 	public void setUserId(String userId) {
-		PushwooshInApp.getInstance().setUserId(userId);
+		Pushwoosh.getInstance().setUserId(userId);
 	}
 
 	@Kroll.method
 	public void postEvent(String event, HashMap<String, Object> attributes) {
-		PushwooshInApp.getInstance().postEvent(event, Tags.fromJson(JsonUtils.mapToJson((Map<String, Object>) attributes)));
+		InAppManager.getInstance().postEvent(event, Tags.fromJson(JsonUtils.mapToJson((Map<String, Object>) attributes)));
 	}
 
 	@Kroll.method
