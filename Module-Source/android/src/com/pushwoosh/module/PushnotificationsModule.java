@@ -26,7 +26,6 @@ import com.pushwoosh.exception.RegisterForPushNotificationsException;
 import com.pushwoosh.function.Callback;
 import com.pushwoosh.function.Result;
 import com.pushwoosh.inapp.InAppManager;
-import com.pushwoosh.inapp.PushwooshInApp;
 import com.pushwoosh.internal.utils.JsonUtils;
 import com.pushwoosh.notification.LocalNotification;
 import com.pushwoosh.notification.LocalNotificationReceiver;
