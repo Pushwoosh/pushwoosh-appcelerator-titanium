@@ -10,9 +10,9 @@
 #import "TiHost.h"
 #import "TiUtils.h"
 #import "TiApp.h"
-#import "Pushwoosh.h"
-#import "PWInAppManager.h"
-#import "PWGDPRManager.h"
+#import <Pushwoosh/Pushwoosh.h>
+#import <Pushwoosh/PWInAppManager.h>
+#import <Pushwoosh/PWGDPRManager.h>
 #import <UserNotifications/UserNotifications.h>
 #import "PWMUserNotificationCenterDelegateProxy.h"
 
