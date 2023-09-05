@@ -19,7 +19,7 @@
     <dependency>
       <groupId>com.pushwoosh</groupId>
       <artifactId>pushwoosh-location</artifactId>
-      <version>6.6.14</version>
+      <version>6.6.16</version>
     </dependency>
   </dependencies>
 </project>
