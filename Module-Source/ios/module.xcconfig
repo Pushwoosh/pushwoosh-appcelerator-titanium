@@ -11,6 +11,10 @@
 // How to add a Framework (example)
 //
 OTHER_LDFLAGS=$(inherited) -lz
+
+FRAMEWORK_SEARCH_PATHS = $(SRCROOT)/Library
+
+OTHER_LDFLAGS += -framework Pushwoosh
 //
 // Adding a framework for a specific version(s) of iPhone:
 //
