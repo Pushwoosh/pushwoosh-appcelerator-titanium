@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:../Library">
+      location = "self:../Library/Pushwoosh.xcframework">
    </FileRef>
 </Workspace>
