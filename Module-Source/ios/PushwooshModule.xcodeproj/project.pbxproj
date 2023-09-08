@@ -233,7 +233,7 @@
 				DSTROOT = /tmp/ComPushwooshModule.dst;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Library",
 					.,
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -283,7 +283,7 @@
 				DSTROOT = /tmp/ComPushwooshModule.dst;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Library",
 					.,
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
