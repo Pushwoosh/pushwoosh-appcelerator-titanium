@@ -28,7 +28,7 @@
 		24DE9E1211C5FE74003F90F6 /* ComPushwooshModuleModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DE9E1011C5FE74003F90F6 /* ComPushwooshModuleModuleAssets.m */; };
 		2A31C4DF1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A31C4DD1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.m */; };
 		2A31C4E01FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A31C4DE1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.h */; };
-		446689D22AAB2E300091D217 /* Pushwoosh.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 446689D12AAB2E300091D217 /* Pushwoosh.xcframework */; };
+		44B3B3702ABAF94500458C7F /* Pushwoosh.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44B3B36F2ABAF94500458C7F /* Pushwoosh.xcframework */; };
 		AA747D9F0F9514B9006C5449 /* ComPushwooshModule_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* ComPushwooshModule_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -51,7 +51,7 @@
 		24DE9E1011C5FE74003F90F6 /* ComPushwooshModuleModuleAssets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComPushwooshModuleModuleAssets.m; path = Classes/ComPushwooshModuleModuleAssets.m; sourceTree = "<group>"; };
 		2A31C4DD1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PWMUserNotificationCenterDelegateProxy.m; path = Classes/PWMUserNotificationCenterDelegateProxy.m; sourceTree = "<group>"; };
 		2A31C4DE1FDAA19200CE85DC /* PWMUserNotificationCenterDelegateProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWMUserNotificationCenterDelegateProxy.h; path = Classes/PWMUserNotificationCenterDelegateProxy.h; sourceTree = "<group>"; };
-		446689D12AAB2E300091D217 /* Pushwoosh.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Pushwoosh.xcframework; path = Library/Pushwoosh.xcframework; sourceTree = "<group>"; };
+		44B3B36F2ABAF94500458C7F /* Pushwoosh.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Pushwoosh.xcframework; path = platform/Pushwoosh.xcframework; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* ComPushwooshModule_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComPushwooshModule_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libComPushwooshModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libComPushwooshModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,7 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				446689D22AAB2E300091D217 /* Pushwoosh.xcframework in Frameworks */,
+				44B3B3702ABAF94500458C7F /* Pushwoosh.xcframework in Frameworks */,
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -92,7 +92,7 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				446689D12AAB2E300091D217 /* Pushwoosh.xcframework */,
+				44B3B36F2ABAF94500458C7F /* Pushwoosh.xcframework */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 			);
 			name = Frameworks;
