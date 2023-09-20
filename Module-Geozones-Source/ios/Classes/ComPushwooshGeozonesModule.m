@@ -9,7 +9,8 @@
 #import "TiBase.h"
 #import "TiHost.h"
 #import "TiUtils.h"
-#import "PWGeozonesManager.h"
+
+#import <PushwooshGeozones/PWGeozonesManager.h>
 
 @implementation ComPushwooshGeozonesModule
 
