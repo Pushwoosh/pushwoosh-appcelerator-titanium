@@ -26,7 +26,7 @@
 		24DD6CFA1134B3F500162E58 /* ComPushwooshGeozonesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DD6CF81134B3F500162E58 /* ComPushwooshGeozonesModule.m */; };
 		24DE9E1111C5FE74003F90F6 /* ComPushwooshGeozonesModuleAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = 24DE9E0F11C5FE74003F90F6 /* ComPushwooshGeozonesModuleAssets.h */; };
 		24DE9E1211C5FE74003F90F6 /* ComPushwooshGeozonesModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DE9E1011C5FE74003F90F6 /* ComPushwooshGeozonesModuleAssets.m */; };
-		44B3B3722ABAF96200458C7F /* PushwooshGeozones.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44B3B3712ABAF96200458C7F /* PushwooshGeozones.xcframework */; };
+		44B3B3732ABB1D1900458C7F /* PushwooshGeozones.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44B3B3712ABAF96200458C7F /* PushwooshGeozones.xcframework */; };
 		AA747D9F0F9514B9006C5449 /* ComPushwooshGeozones_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* ComPushwooshGeozones_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -58,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				44B3B3722ABAF96200458C7F /* PushwooshGeozones.xcframework in Frameworks */,
+				44B3B3732ABB1D1900458C7F /* PushwooshGeozones.xcframework in Frameworks */,
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
